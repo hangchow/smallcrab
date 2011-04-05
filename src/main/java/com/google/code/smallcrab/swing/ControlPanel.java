@@ -40,7 +40,6 @@ import javax.swing.SwingWorker;
 import javax.swing.table.TableModel;
 
 import com.google.code.smallcrab.analyze.AnalyzeCallback;
-import com.google.code.smallcrab.analyze.EntryValueDescComparator;
 import com.google.code.smallcrab.analyze.impl.FileLineAnalyzer;
 import com.google.code.smallcrab.scan.LineMatcher;
 import com.google.code.smallcrab.scan.LineViewer;
@@ -65,7 +64,6 @@ import com.google.code.smallcrab.scan.apache.ApacheReferrerMatcher;
 import com.google.code.smallcrab.scan.apache.ApacheReferrerViewer;
 import com.google.code.smallcrab.scan.apache.ApacheScanner;
 import com.google.code.smallcrab.scan.apache.ApacheSpliter;
-import com.google.code.smallcrab.swing.apache.ApacheConfigTableModel;
 import com.google.code.smallcrab.swing.apache.ApacheMatchConfigTable;
 import com.google.code.smallcrab.swing.apache.ApacheViewConfigTable;
 import com.google.code.smallcrab.utils.CrabKit;
@@ -87,13 +85,13 @@ public class ControlPanel extends JPanel implements ActionListener {
 	 */
 	private class AnalyzeTask extends SwingWorker<Void, Void> {
 		private final ReentrantLock sleepLock = new ReentrantLock();
-		private final Condition wakeup = sleepLock.newCondition();
+		private final Condition wakeupCondition = sleepLock.newCondition();
 		private final static long PROGRESS_BAR_MAX = 100;
 
 		private void wakeup() {
 			sleepLock.lock();
 			try {
-				wakeup.signal();
+				wakeupCondition.signal();
 			} finally {
 				sleepLock.unlock();
 			}
@@ -102,7 +100,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		private void sleep() {
 			sleepLock.lock();
 			try {
-				wakeup.await();
+				wakeupCondition.await();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} finally {
@@ -151,8 +149,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 						}
 
 						private long setBufferLineSize() {
-							// assume 1000 chars in one line
-							long n = totalLength / 1000 / 100;
+							long n = totalLength / 1024 / 100;
 							n = n == 0 ? 1 : n;
 							return n;
 						}
@@ -162,6 +159,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 					clickStopButton();
 				} catch (Throwable e) {
 					taskOutput.append(e.toString());
+					e.printStackTrace();
 				}
 			}
 		}
@@ -172,14 +170,22 @@ public class ControlPanel extends JPanel implements ActionListener {
 		}
 
 		private void outputAnalyzeResult(FileLineAnalyzer ala, final long totalLength, final Map<String, Integer> result, final AnalyzeCallback ac) {
-			taskOutput.append("= Lines:" + ac.getTotalLines() + "\n");
+			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
+			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
 			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
 			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
 			taskOutput.append("===============================================\n");
-			Object[] array = result.entrySet().toArray();
-			Arrays.sort(array, (Comparator) new EntryValueDescComparator());
-			for (int i = 0; i < array.length; i++) {
-				Entry<String, Integer> next = (Entry<String, Integer>) array[i];
+			Object[] resultArray = result.entrySet().toArray();
+			Arrays.sort(resultArray, new Comparator<Object>() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public int compare(Object o1, Object o2) {
+					return ((Entry<String, Integer>) o2).getValue() - ((Entry<String, Integer>) o1).getValue();
+				}
+			});
+			for (int i = 0; i < resultArray.length; i++) {
+				@SuppressWarnings("unchecked")
+				Entry<String, Integer> next = (Entry<String, Integer>) resultArray[i];
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
 			}
 		}
@@ -311,16 +317,43 @@ public class ControlPanel extends JPanel implements ActionListener {
 				wakeupAnalyzer();
 				clickStartButton();
 			} catch (Exception e) {
-				// handled before, so just skip
 			}
 		} else if (CMD_STOP.equals(ae.getActionCommand())) {
-			clickStopButton();
+			try {
+				stopAnalyzer();
+				clickStopButton();
+			} catch (Exception e) {
+			}
+
 		} else if (CMD_PAUSE.equals(ae.getActionCommand())) {
-			clickPauseButton();
+			try {
+				pauseAnalyzer();
+				clickPauseButton();
+			} catch (Exception e) {
+			}
 		} else if (ae.getSource() == fileChooseButton) {
-			choseFile();
-			clickStopButton();
+			try {
+				choseFile();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+
+	}
+
+	/**
+	 * 
+	 */
+	private void pauseAnalyzer() {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * 
+	 */
+	private void stopAnalyzer() {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -454,7 +487,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 	private void outputViewConfigError(String msg, String option) {
 		String output = msg;
 		if (option != null) {
-			output = "Please check view config " + option + " !";
+			output = "Please check view config " + option;
 		}
 		this.apacheConfigOutput.setText(output);
 		throw new IllegalArgumentException(option);

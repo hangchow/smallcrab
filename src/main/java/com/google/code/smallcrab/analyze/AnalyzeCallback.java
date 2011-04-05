@@ -4,7 +4,7 @@
 package com.google.code.smallcrab.analyze;
 
 /**
- * @author lin.wangl
+ * @author seanlinwang at gmail dot com
  * 
  */
 public abstract class AnalyzeCallback {
@@ -21,15 +21,25 @@ public abstract class AnalyzeCallback {
 	public abstract void callback();
 
 	public abstract long getBufferLineSize();
-	
+
 	private long totalLines;
 
 	public void setTotalLines(long line) {
 		this.totalLines = line;
 	}
-	
+
 	public long getTotalLines() {
 		return this.totalLines;
+	}
+
+	private int invalidLines;
+
+	public int getInvalidLines() {
+		return invalidLines;
+	}
+
+	public void setInvalidLines(int invalidLines) {
+		this.invalidLines = invalidLines;
 	}
 
 }

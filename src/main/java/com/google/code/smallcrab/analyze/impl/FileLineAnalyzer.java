@@ -4,10 +4,10 @@
 package com.google.code.smallcrab.analyze.impl;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -23,7 +23,7 @@ import com.google.code.smallcrab.utils.ArrayKit;
 /**
  * Analyze file one line by one line.
  * 
- * @author lin.wangl
+ * @author seanlinwang at gmail dot com
  * 
  */
 public class FileLineAnalyzer implements FileAnalyzer {
@@ -75,15 +75,6 @@ public class FileLineAnalyzer implements FileAnalyzer {
 
 	private final Object eof = new Object();
 
-	private long totalLines = 0;
-
-	/**
-	 * 
-	 */
-	private void incrementTotalLines() {
-		totalLines++;
-	}
-
 	/**
 	 * @param lineScanner
 	 */
@@ -107,12 +98,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 		final Thread scanThread = new Thread(new Runnable() {
 
 			private void consume(String strLine) {
-				String[] lineResult = null;
-				try {
-					lineResult = lineScanner.scan(strLine);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				String[] lineResult = lineScanner.scan(strLine);
 				if (ArrayKit.isNotEmpty(lineResult)) {
 					StringBuilder keyBuffer = new StringBuilder();
 					for (String resultSegment : lineResult) {
@@ -126,37 +112,37 @@ public class FileLineAnalyzer implements FileAnalyzer {
 					count = count == null ? 0 : count;
 					result.put(key, ++count);
 				}
-				callback.addAnalyzedSize(strLine.length() + 2);// 2 identified the length of /r/n
-				if (totalLines % callback.getBufferLineSize() == 0) {
-					try {
-						callback.callback();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				incrementTotalLines();
 			}
 
 			@Override
 			public void run() {
 				Object strLine = null;
+				long lineNumber = 1;
+				int invalidLines = 0;
 				while (true) {
 					try {
 						strLine = linePool.take();
 					} catch (InterruptedException e) {
+						e.printStackTrace();
 						continue;
 					}
 					if (strLine == eof) {
+						callback.callback();
 						break;
 					}
-					consume((String) strLine);
+					try {
+						consume((String) strLine);
+					} catch (Throwable e) {
+						invalidLines ++;
+					}
+					callback.addAnalyzedSize(((String)strLine).length() + 2);// 2 identified the length of /r/n, not very correct. FIXME
+					if (lineNumber % callback.getBufferLineSize() == 0) {
+						callback.callback();
+					}
+					lineNumber ++;
 				}
-				callback.setTotalLines(totalLines);// set total analyzed lines
-				try {
-					callback.callback();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				callback.setTotalLines(lineNumber);// set total analyzed lines
+				callback.setInvalidLines(invalidLines);
 				scanLock.lock();
 				try {
 					scanned.signal();
@@ -168,16 +154,16 @@ public class FileLineAnalyzer implements FileAnalyzer {
 		scanThread.setName("sc-scan-1");
 		scanThread.start();
 		long start = System.currentTimeMillis();
-		DataInputStream in = null;
+		InputStream in = null;
 		try {
-			in = new DataInputStream(new FileInputStream(file));//FIXME remove datainputstream
+			in = new FileInputStream(file);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			while ((strLine = br.readLine()) != null) {
 				try {
-					if (linePool.size() == MAX_LINE_POOL_SIZE) {
-						System.out.println("LINE POOL OVERFLOW:" + linePool.size());
-					}
+					//if (linePool.size() == MAX_LINE_POOL_SIZE) {
+						//System.out.println("LINE POOL OVERFLOW:" + linePool.size());
+					//}
 					this.linePool.put(strLine);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -193,10 +179,8 @@ public class FileLineAnalyzer implements FileAnalyzer {
 				scanLock.unlock();
 			}
 		} finally {
-			try {
+			if (in != null) {
 				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 		this.analyzePeriod = System.currentTimeMillis() - start;
