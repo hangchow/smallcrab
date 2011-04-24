@@ -195,7 +195,7 @@ public class StringKit {
 		if (len == 0) {
 			return ArrayKit.EMPTY_STRING_ARRAY;
 		}
-		List list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 		int i = 0, start = 0;
 		boolean match = false;
 		boolean lastMatch = false;

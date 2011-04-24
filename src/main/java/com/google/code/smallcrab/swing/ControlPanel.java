@@ -41,6 +41,7 @@ import javax.swing.table.TableModel;
 
 import com.google.code.smallcrab.analyze.AnalyzeCallback;
 import com.google.code.smallcrab.analyze.impl.FileLineAnalyzer;
+import com.google.code.smallcrab.config.ConfigException;
 import com.google.code.smallcrab.scan.LineMatcher;
 import com.google.code.smallcrab.scan.LineViewer;
 import com.google.code.smallcrab.scan.apache.AbstractApacheMatcher;
@@ -244,7 +245,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		startButton.addActionListener(this);
 		pauseButton.addActionListener(this);
 		stopButton.addActionListener(this);
-		disableButtons();
+		initButtons();
 
 		fileChooseButton.setToolTipText("Choose log file.");
 		startButton.setToolTipText("Start task.");
@@ -316,27 +317,20 @@ public class ControlPanel extends JPanel implements ActionListener {
 				prepareAnalyzing();
 				wakeupAnalyzer();
 				clickStartButton();
-			} catch (Exception e) {
-			}
-		} else if (CMD_STOP.equals(ae.getActionCommand())) {
-			try {
-				stopAnalyzer();
-				clickStopButton();
-			} catch (Exception e) {
-			}
+			} catch (ConfigException e) {
 
-		} else if (CMD_PAUSE.equals(ae.getActionCommand())) {
-			try {
-				pauseAnalyzer();
-				clickPauseButton();
-			} catch (Exception e) {
-			}
-		} else if (ae.getSource() == fileChooseButton) {
-			try {
-				choseFile();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else if (CMD_STOP.equals(ae.getActionCommand())) {
+			stopAnalyzer();
+			clickStopButton();
+		} else if (CMD_PAUSE.equals(ae.getActionCommand())) {
+			pauseAnalyzer();
+			clickPauseButton();
+		} else if (ae.getSource() == fileChooseButton) {
+			choseFile();
+			clickStopButton();
 		}
 
 	}
@@ -364,14 +358,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 	 * <li>scan match rules</li>
 	 * <li>scan filter rules</li>
 	 * </ul>
+	 * 
+	 * @throws ConfigException
 	 */
-	private void prepareAnalyzing() {
+	private void prepareAnalyzing() throws ConfigException {
 		resetConfigOutput();
 		prepareViewers();
 		prepareMatchers();
 	}
 
-	private void initViewers(TableModel viewModel) {
+	private void initViewers(TableModel viewModel) throws ConfigException {
 		int checkedNum = 0;
 		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
 			boolean checked = (Boolean) viewModel.getValueAt(rowIndex, 2);
@@ -379,15 +375,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 				checkedNum++;
 		}
 		if (checkedNum == 0) {
-			outputViewConfigError("Please set any View Configs!", null);
+			outputViewConfigError(null);
 		}
 		this.lineViewers = new AbstractApacheViewer[checkedNum];
 	}
 
 	/**
+	 * @throws ConfigException
 	 * 
 	 */
-	private void prepareViewers() {
+	private void prepareViewers() throws ConfigException {
 		TableModel viewModel = this.apacheViewTable.getModel();
 		initViewers(viewModel);
 		int line = 0;
@@ -418,7 +415,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 			} else if (ALL.equals(option)) {
 				viewer = new ApacheAllViewer(value);
 			} else {
-				outputViewConfigError(null, option);
+				outputViewConfigError(option);
 			}
 			this.lineViewers[line] = viewer;
 			line++;
@@ -435,7 +432,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		this.lineMatchers = new AbstractApacheMatcher[checkedNum];
 	}
 
-	private void prepareMatchers() {
+	private void prepareMatchers() throws ConfigException {
 		TableModel matchModel = this.apacheMatchTable.getModel();
 		initMatchers(matchModel);
 		int line = 0;
@@ -479,18 +476,26 @@ public class ControlPanel extends JPanel implements ActionListener {
 		}
 	}
 
-	private void outputMatchConfigError(String option) {
-		this.apacheConfigOutput.setText("Please check match config " + option + " !");
-		throw new IllegalArgumentException(option);
-	}
-
-	private void outputViewConfigError(String msg, String option) {
-		String output = msg;
+	private void outputMatchConfigError(String option) throws ConfigException {
+		String output = null;
 		if (option != null) {
-			output = "Please check view config " + option;
+			output = "Please check match config: " + option + ".";
+		} else {
+			output = "Please check match configs.";
 		}
 		this.apacheConfigOutput.setText(output);
-		throw new IllegalArgumentException(option);
+		throw new ConfigException();
+	}
+
+	private void outputViewConfigError(String option) throws ConfigException {
+		String output = null;
+		if (option != null) {
+			output = "Please check view config: " + option + ".";
+		} else {
+			output = "Please check view configs.";
+		}
+		this.apacheConfigOutput.setText(output);
+		throw new ConfigException();
 	}
 
 	private void wakeupAnalyzer() {
@@ -511,21 +516,24 @@ public class ControlPanel extends JPanel implements ActionListener {
 		startButton.setEnabled(false);
 		pauseButton.setEnabled(true);
 		stopButton.setEnabled(true);
+		fileChooseButton.setEnabled(false);
 	}
 
 	private void clickPauseButton() {
 		startButton.setEnabled(true);
 		pauseButton.setEnabled(false);
 		stopButton.setEnabled(true);
+		fileChooseButton.setEnabled(false);
 	}
 
 	private void clickStopButton() {
 		startButton.setEnabled(true);
 		pauseButton.setEnabled(false);
 		stopButton.setEnabled(false);
+		fileChooseButton.setEnabled(true);
 	}
 
-	private void disableButtons() {
+	private void initButtons() {
 		startButton.setEnabled(false);
 		pauseButton.setEnabled(false);
 		stopButton.setEnabled(false);
