@@ -109,6 +109,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 			}
 		}
 
+		private boolean isPaused() {
+			boolean isPaused = false;
+			if (analyzer != null) {
+				isPaused = analyzer.isPaused();
+			}
+			return isPaused;
+		}
+
+		private FileLineAnalyzer analyzer;
+
 		/*
 		 * Main task. Executed in background thread.
 		 */
@@ -120,13 +130,9 @@ public class ControlPanel extends JPanel implements ActionListener {
 					if (lineViewers.length == 0) {
 						continue;
 					}
-					ApacheScanner scanner = new ApacheScanner();
-					scanner.setLineViewers(lineViewers);
-					scanner.setLineMatchers(lineMatchers);
-					FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
 					final long totalLength = sourceFile.length();
 					this.setProgress(0);
-
+					outputClear();
 					outputAnalyzeStart(totalLength);
 
 					final Map<String, Integer> result = new HashMap<String, Integer>(512);
@@ -155,6 +161,8 @@ public class ControlPanel extends JPanel implements ActionListener {
 							return n;
 						}
 					};
+
+					initAnalyzer();
 					analyzer.analyze(sourceFile, result, ac);
 					outputAnalyzeResult(analyzer, totalLength, result, ac);
 					clickStopButton();
@@ -163,6 +171,20 @@ public class ControlPanel extends JPanel implements ActionListener {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		/**
+		 * clear output result
+		 */
+		private void outputClear() {
+			taskOutput.setText("");
+		}
+
+		private void initAnalyzer() {
+			ApacheScanner scanner = new ApacheScanner();
+			scanner.setLineViewers(lineViewers);
+			scanner.setLineMatchers(lineMatchers);
+			analyzer = new FileLineAnalyzer(scanner);
 		}
 
 		private void outputAnalyzeStart(final long totalLength) {
@@ -190,6 +212,27 @@ public class ControlPanel extends JPanel implements ActionListener {
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
 			}
 		}
+
+		/**
+		 * 
+		 */
+		public void pause() {
+			this.analyzer.pause();
+		}
+
+		/**
+		 * 
+		 */
+		public void unpause() {
+			this.analyzer.unpause();
+		}
+
+		/**
+		 * 
+		 */
+		public void stop() {
+			this.analyzer.finish();
+		}
 	}
 
 	private static final String CMD_PAUSE = "cmd_pause";
@@ -209,13 +252,13 @@ public class ControlPanel extends JPanel implements ActionListener {
 	private LineMatcher<ApacheSpliter>[] lineMatchers;
 	private LineViewer<ApacheSpliter>[] lineViewers;
 	private JLabel apacheConfigOutput;
+	private PropertyChangeListener taskListener;
 
 	public ControlPanel(JTextArea taskOutput, PropertyChangeListener taskListener) {
 		this.setLayout(new BorderLayout());
 
-		analyzeTask = new AnalyzeTask();
-		analyzeTask.addPropertyChangeListener(taskListener);
-		analyzeTask.execute();
+		this.taskListener = taskListener;
+		initAnalyzeTask();
 
 		this.taskOutput = taskOutput;
 
@@ -307,6 +350,12 @@ public class ControlPanel extends JPanel implements ActionListener {
 		add(configPane, BorderLayout.CENTER);
 	}
 
+	private void initAnalyzeTask() {
+		analyzeTask = new AnalyzeTask();
+		analyzeTask.addPropertyChangeListener(this.taskListener);
+		analyzeTask.execute();
+	}
+
 	private void resetConfigOutput() {
 		this.apacheConfigOutput.setText("");
 	}
@@ -314,8 +363,11 @@ public class ControlPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent ae) {
 		if (CMD_START.equals(ae.getActionCommand())) {
 			try {
-				prepareAnalyzing();
-				wakeupAnalyzer();
+				beforeAnalyzing();
+				wakeupAnalyzing();
+				if (isAnalyzingPaused()) {
+					unpauseAnalyzing();
+				}
 				clickStartButton();
 			} catch (ConfigException e) {
 
@@ -323,10 +375,13 @@ public class ControlPanel extends JPanel implements ActionListener {
 				e.printStackTrace();
 			}
 		} else if (CMD_STOP.equals(ae.getActionCommand())) {
-			stopAnalyzer();
+			if (isAnalyzingPaused()) {
+				unpauseAnalyzing();
+			}
+			stopAnalyzing();
 			clickStopButton();
 		} else if (CMD_PAUSE.equals(ae.getActionCommand())) {
-			pauseAnalyzer();
+			pauseAnalyzing();
 			clickPauseButton();
 		} else if (ae.getSource() == fileChooseButton) {
 			choseFile();
@@ -337,34 +392,45 @@ public class ControlPanel extends JPanel implements ActionListener {
 
 	/**
 	 * 
-	 */
-	private void pauseAnalyzer() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * 
-	 */
-	private void stopAnalyzer() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * 
 	 * prepare everything before analyzing:
-	 * <ul>
-	 * <li>scan match rules</li>
-	 * <li>scan filter rules</li>
-	 * </ul>
 	 * 
 	 * @throws ConfigException
 	 */
-	private void prepareAnalyzing() throws ConfigException {
+	private void beforeAnalyzing() throws ConfigException {
 		resetConfigOutput();
 		prepareViewers();
 		prepareMatchers();
+	}
+
+	/**
+	 * wakeup analyzing, because analyze task is sleeping after init.
+	 * 
+	 * see AnalyzeTask.sleep()
+	 */
+	private void wakeupAnalyzing() {
+		analyzeTask.wakeup();
+	}
+
+	private boolean isAnalyzingPaused() {
+		return analyzeTask.isPaused();
+	}
+
+	/**
+	 * pause analyzing
+	 */
+	private void pauseAnalyzing() {
+		analyzeTask.pause();
+	}
+
+	private void unpauseAnalyzing() {
+		analyzeTask.unpause();
+	}
+
+	/**
+	 * stop analyzing
+	 */
+	private void stopAnalyzing() {
+		analyzeTask.stop();
 	}
 
 	private void initViewers(TableModel viewModel) throws ConfigException {
@@ -496,10 +562,6 @@ public class ControlPanel extends JPanel implements ActionListener {
 		}
 		this.apacheConfigOutput.setText(output);
 		throw new ConfigException();
-	}
-
-	private void wakeupAnalyzer() {
-		analyzeTask.wakeup();
 	}
 
 	private void choseFile() {

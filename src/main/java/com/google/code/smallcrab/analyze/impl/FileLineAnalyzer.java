@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -28,7 +30,7 @@ import com.google.code.smallcrab.utils.ArrayKit;
  */
 public class FileLineAnalyzer implements FileAnalyzer {
 	/**
-	 * 
+	 * max file line pool size
 	 */
 	private static final int MAX_LINE_POOL_SIZE = 1024 * 10;
 
@@ -42,14 +44,39 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	}
 
 	/**
-	 * analyzer running flag
+	 * analyzing finished flag
 	 */
-	private boolean finished = false;
+	private volatile boolean finished = false;
 
 	@Override
 	public boolean isFinished() {
 		return this.finished;
 	}
+
+	/**
+	 * analyzing paused flag
+	 */
+	private volatile boolean paused = false;
+
+	@Override
+	public boolean isPaused() {
+		return this.paused;
+	}
+
+	/**
+	 * analyzing paused lock
+	 */
+	private final ReentrantLock pausedLock = new ReentrantLock();
+
+	/**
+	 * analyzing paused condition
+	 */
+	private final Condition pausedCondition = pausedLock.newCondition();
+
+	/**
+	 * barrier for analyzing thread and readline thread
+	 */
+	private final CyclicBarrier barrier = new CyclicBarrier(2);
 
 	/**
 	 * total analyzing period
@@ -68,10 +95,6 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	public void setLinePool(BlockingQueue<Object> linePool) {
 		this.linePool = linePool;
 	}
-
-	private final ReentrantLock scanLock = new ReentrantLock();
-
-	private final Condition scanned = scanLock.newCondition();
 
 	private final Object eof = new Object();
 
@@ -95,7 +118,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	 */
 	@Override
 	public void analyze(final File file, final Map<String, Integer> result, final AnalyzeCallback callback) throws IOException {
-		final Thread scanThread = new Thread(new Runnable() {
+		final Thread analyzingThread = new Thread(new Runnable() {
 
 			private void consume(String strLine) {
 				String[] lineResult = lineScanner.scan(strLine);
@@ -126,65 +149,111 @@ public class FileLineAnalyzer implements FileAnalyzer {
 						e.printStackTrace();
 						continue;
 					}
+					if (paused) {
+						System.err.println("paused consume");
+						pausedLock.lock();
+						try {
+							pausedCondition.await();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} finally {
+							pausedLock.unlock();
+						}
+					}
 					if (strLine == eof) {
 						callback.callback();
+						finished = true;
+						System.err.println("readed eof and enable finished flag");
 						break;
 					}
 					try {
 						consume((String) strLine);
 					} catch (Throwable e) {
-						invalidLines ++;
+						invalidLines++;
 					}
-					callback.addAnalyzedSize(((String)strLine).length() + 2);// 2 identified the length of /r/n, not very correct. FIXME
+					callback.addAnalyzedSize(((String) strLine).length() + 2);// 2 identified the length of /r/n, not very correct. FIXME
 					if (lineNumber % callback.getBufferLineSize() == 0) {
 						callback.callback();
 					}
-					lineNumber ++;
+					lineNumber++;
 				}
 				callback.setTotalLines(lineNumber);// set total analyzed lines
 				callback.setInvalidLines(invalidLines);
-				scanLock.lock();
-				try {
-					scanned.signal();
-				} finally {
-					scanLock.unlock();
-				}
-			}
-		});
-		scanThread.setName("sc-scan-1");
-		scanThread.start();
-		long start = System.currentTimeMillis();
+				linePool.clear();// clear and unblock the queue
+				System.err.println("analyzing thread finished");
+				awaitFinish();// await for readline thread finished
+			}// end run()
+		});// end new analyzing thread
+
+		analyzingThread.setName("sc-scan-1");
+		analyzingThread.start();
 		InputStream in = null;
+		long start = System.currentTimeMillis();
 		try {
 			in = new FileInputStream(file);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			while ((strLine = br.readLine()) != null) {
-				try {
-					//if (linePool.size() == MAX_LINE_POOL_SIZE) {
-						//System.out.println("LINE POOL OVERFLOW:" + linePool.size());
-					//}
-					this.linePool.put(strLine);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				if (linePool.size() == MAX_LINE_POOL_SIZE) {
+					System.err.println("LINE POOL OVERFLOW:" + linePool.size());
 				}
-			}
-			scanLock.lock();
-			try {
-				linePool.put(eof);
-				scanned.await();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} finally {
-				scanLock.unlock();
+				if (!this.finished) { // call finished() when reading lines
+					try {
+						this.linePool.put(strLine);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} else {
+					System.err.println("finished flag enable");
+					break;
+				}
 			}
 		} finally {
 			if (in != null) {
 				in.close();
 			}
 		}
-		this.analyzePeriod = System.currentTimeMillis() - start;
-		this.finished = true;
+		if (!this.finished) { // not call finished() outside
+			this.finish();
+		}
+		System.err.println("readline thread finished");
+		awaitFinish();// await for analyzing thread finished
+		analyzePeriod = System.currentTimeMillis() - start;
+	}
+
+	private void awaitFinish() {
+		try {
+			barrier.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (BrokenBarrierException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void pause() {
+		this.paused = true;
+	}
+
+	public void unpause() {
+		this.paused = false;
+		pausedLock.lock();
+		try {
+			pausedCondition.signal();
+		} finally {
+			pausedLock.unlock();
+		}
+	}
+
+	public void finish() {
+		try {
+			linePool.put(eof);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 }
