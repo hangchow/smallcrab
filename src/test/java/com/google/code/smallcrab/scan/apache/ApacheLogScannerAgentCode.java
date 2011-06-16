@@ -1,6 +1,6 @@
 package com.google.code.smallcrab.scan.apache;
 
-import com.google.code.smallcrab.scan.LineScanner;
+import com.google.code.smallcrab.analyze.LineScanner;
 import com.google.code.smallcrab.utils.ApacheLogHelper;
 import com.google.code.smallcrab.utils.StringKit;
 

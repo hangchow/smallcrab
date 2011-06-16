@@ -12,7 +12,8 @@ import javax.swing.BorderFactory;
  * @date Dec 30, 2010
  */
 public class ApacheViewConfigTable extends ApacheConfigTable {
-
+	private static final long serialVersionUID = 2257646661345167680L;
+	
 	/**
 	 * @param tableModel
 	 */
@@ -25,8 +26,5 @@ public class ApacheViewConfigTable extends ApacheConfigTable {
 		this.paintRow();
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2257646661345167680L;
+	
 }
