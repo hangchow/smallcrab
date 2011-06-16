@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.code.smallcrab.scan.LineScanner;
+import com.google.code.smallcrab.analyze.LineScanner;
 import com.google.code.smallcrab.utils.ApacheLogHelper;
 import com.google.code.smallcrab.utils.UrlKit;
 

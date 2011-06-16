@@ -12,9 +12,6 @@ import javax.swing.BorderFactory;
  * @date Dec 30, 2010
  */
 public class ApacheMatchConfigTable extends ApacheConfigTable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -250334773896895882L;
 
 	/**

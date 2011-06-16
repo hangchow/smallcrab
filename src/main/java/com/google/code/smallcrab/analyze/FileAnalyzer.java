@@ -15,9 +15,7 @@ public interface FileAnalyzer {
 
 	/**
 	 * @param source
-	 *            the file for analyzing
-	 * @param callback
-	 *            analyze callback
+	 *            the file for analyzing s * @param callback analyze callback
 	 * @param result
 	 *            analyzed result
 	 * @throws IOException
@@ -28,5 +26,10 @@ public interface FileAnalyzer {
 	 * @return a flag indicate analyze task running status : true/finished or false/running
 	 */
 	boolean isFinished();
+
+	/**
+	 * @return
+	 */
+	boolean isPaused();
 
 }

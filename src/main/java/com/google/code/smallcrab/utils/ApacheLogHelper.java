@@ -20,7 +20,9 @@ public class ApacheLogHelper {
 
 	/**
 	 * @param line
-	 *            e.g: 10.13.42.182 13322 - [04/Nov/2010:15:55:09 +0800] "GET http://10.232.37.21/topcontainer/container/abc" 404 334 "www.taobao.com" "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8 QQDownload/1.7"
+	 *            e.g: 10.13.42.182 13322 - [04/Nov/2010:15:55:09 +0800] "GET http://10.232.37.21/container/abc" 404 334 "www.test.com" "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8 QQDownload/1.7"
+	 *            -->
+	 *            %h %D - %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\""	
 	 * 
 	 * @return String[]{host0, period1, time2, method3, url4, code5, size6, referrer7, agent8}
 	 */
