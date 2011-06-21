@@ -27,7 +27,7 @@ public class SmallCrab extends JPanel {
 	public SmallCrab() {
 		super(new BorderLayout());
 		OutputPanel leftPanel = new OutputPanel();
-		JPanel rightPanel = new ControlPanel(leftPanel.getTaskOutput(), leftPanel);
+		JPanel rightPanel = new ControlPanel(frame, leftPanel.getTaskOutput(), leftPanel);
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
 		splitPane.setOneTouchExpandable(true);

@@ -18,9 +18,8 @@ import com.google.code.smallcrab.viewer.LineViewer;
  * @date Jun 16, 2011
  * 
  */
-public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends LineMatcher<?>> extends JPanel{
+public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends LineMatcher<?>> extends JPanel {
 	private static final long serialVersionUID = -4714616501704128141L;
-	
 
 	public AnalyzeConfigPanel(LayoutManager layout) {
 		super(layout);
@@ -29,15 +28,21 @@ public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends Li
 	public abstract void resetConfigOutput();
 
 	/**
+	 * Create file analyzer
+	 * 
 	 * @return
 	 */
 	public abstract FileLineAnalyzer createFileLineAnalyzer();
 
 	/**
 	 * @return
-	 * @throws ConfigException 
+	 * @throws ConfigException
 	 */
 	public abstract boolean isPrepared() throws ConfigException;
+
+	public abstract boolean isAnalyzeAppend();
+
+	public abstract boolean isAnalyzeCount();
 
 	/**
 	 * @return
@@ -49,4 +54,5 @@ public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends Li
 	 * @throws ConfigException
 	 */
 	protected abstract List<lv> prepareViewers() throws ConfigException;
+
 }

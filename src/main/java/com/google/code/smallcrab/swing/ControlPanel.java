@@ -8,14 +8,16 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
@@ -31,6 +33,9 @@ import com.google.code.smallcrab.analyze.FileLineAnalyzer;
  * @date Dec 28, 2010
  */
 public class ControlPanel extends JPanel implements ActionListener {
+	private void println(String msg) {
+		System.err.println(Thread.currentThread().getName() + " -- " + msg);
+	}
 
 	/**
 	 * Analyze task.
@@ -80,14 +85,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 		public Void doInBackground() {
 			while (true) {
 				try {
+					println("sleepping");
 					sleep();
+					setTitle("Analyzing");
 					final long totalLength = sourceFile.length();
-					this.analyzer = analyzeConfigPanel.createFileLineAnalyzer();
+					AnalyzeConfigPanel<?, ?> selectedConfig = getSelectedConfigPanel();
+					this.analyzer = selectedConfig.createFileLineAnalyzer();
 					setProgress(0);
 					outputClear();
 					outputAnalyzeStart(totalLength);
 
-					final Map<String, Integer> result = new HashMap<String, Integer>(512);
 					final AnalyzeCallback ac = new AnalyzeCallback() {
 						private long bufferLineSize = setBufferLineSize();
 
@@ -114,8 +121,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 						}
 					};
 
-					analyzer.analyze(sourceFile, result, ac);
-					stopAnalyze(analyzer, totalLength, result, ac);
+					if (selectedConfig.isAnalyzeCount()) {
+						final Map<String, Integer> result = new HashMap<String, Integer>(10240);
+						analyzer.analyzeCount(sourceFile, result, ac);
+						stopAnalyzeCount(analyzer, totalLength, result, ac);
+					} else if (selectedConfig.isAnalyzeAppend()) {
+						final Map<String, Set<String>> result = new HashMap<String, Set<String>>(10240);
+						analyzer.analyzeAppend(sourceFile, result, ac);
+						stopAnalyzeAppend(analyzer, totalLength, result, ac);
+					}
+					setTitle("Stop");
 				} catch (Throwable e) {
 					taskOutput.append(e.toString());
 					e.printStackTrace();
@@ -135,13 +150,14 @@ public class ControlPanel extends JPanel implements ActionListener {
 			taskOutput.append("= Size:" + totalLength + "\n");
 		}
 
-		private void stopAnalyze(FileLineAnalyzer ala, final long totalLength, final Map<String, Integer> result, final AnalyzeCallback ac) {
+		private void stopAnalyzeCount(FileLineAnalyzer ala, final long totalLength, Map<String, Integer> map, final AnalyzeCallback ac) {
 			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
 			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
 			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
 			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
 			taskOutput.append("===============================================\n");
-			Object[] resultArray = result.entrySet().toArray();
+			@SuppressWarnings("unchecked")
+			Entry<String, Integer>[] resultArray = (Entry<String, Integer>[]) map.entrySet().toArray();
 			Arrays.sort(resultArray, new Comparator<Object>() {
 				@SuppressWarnings("unchecked")
 				@Override
@@ -150,8 +166,20 @@ public class ControlPanel extends JPanel implements ActionListener {
 				}
 			});
 			for (int i = 0; i < resultArray.length; i++) {
-				@SuppressWarnings("unchecked")
-				Entry<String, Integer> next = (Entry<String, Integer>) resultArray[i];
+				Entry<String, Integer> next = resultArray[i];
+				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
+			}
+			toolBarPanel.clickStopButton();
+		}
+
+		private void stopAnalyzeAppend(FileLineAnalyzer ala, final long totalLength, Map<String, Set<String>> map, final AnalyzeCallback ac) {
+			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
+			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
+			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
+			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
+			taskOutput.append("===============================================\n");
+			for (Iterator<Entry<String, Set<String>>> itt = map.entrySet().iterator(); itt.hasNext();) {
+				Entry<String, Set<String>> next = itt.next();
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
 			}
 			toolBarPanel.clickStopButton();
@@ -190,12 +218,13 @@ public class ControlPanel extends JPanel implements ActionListener {
 	private PropertyChangeListener taskListener;
 	private JFileChooser fileChooser;
 	private ToolBarPanel toolBarPanel;
-	private AnalyzeConfigPanel<?, ?> analyzeConfigPanel;
 	private ConfigTabbedPanel configPane;
+	private JFrame frame;
 
-	public ControlPanel(JTextArea taskOutput, PropertyChangeListener taskListener) {
+	public ControlPanel(JFrame frame, JTextArea taskOutput, PropertyChangeListener taskListener) {
 		this.setLayout(new BorderLayout());
 
+		this.frame = frame;
 		this.taskListener = taskListener;
 		this.fileChooser = new JFileChooser();
 		this.analyzeTask = new AnalyzeTask();
@@ -208,26 +237,27 @@ public class ControlPanel extends JPanel implements ActionListener {
 
 		this.configPane = new ConfigTabbedPanel(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
-				JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
-				analyzeConfigPanel = (AnalyzeConfigPanel<?, ?>) sourceTabbedPane.getSelectedComponent();
+				// do nothing
 			}
 		});
-		this.analyzeConfigPanel = (AnalyzeConfigPanel<?, ?>) this.configPane.getSelectedComponent();
-
 		add(configPane, BorderLayout.CENTER);
+	}
+
+	private AnalyzeConfigPanel<?, ?> getSelectedConfigPanel() {
+		return (AnalyzeConfigPanel<?, ?>) this.configPane.getSelectedComponent();
 	}
 
 	public void actionPerformed(ActionEvent ae) {
 		if (ToolBarPanel.CMD_START.equals(ae.getActionCommand())) {
 			try {
-				this.analyzeConfigPanel.resetConfigOutput();
-				if (this.analyzeConfigPanel.isPrepared()) {
+				getSelectedConfigPanel().resetConfigOutput();
+				if (getSelectedConfigPanel().isPrepared()) {
 					wakeupAnalyzing();
+					if (isAnalyzingPaused()) {
+						unpauseAnalyzing();
+					}
+					this.toolBarPanel.clickStartButton();
 				}
-				if (isAnalyzingPaused()) {
-					unpauseAnalyzing();
-				}
-				this.toolBarPanel.clickStartButton();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -241,10 +271,27 @@ public class ControlPanel extends JPanel implements ActionListener {
 			pauseAnalyzing();
 			this.toolBarPanel.clickPauseButton();
 		} else if (ToolBarPanel.CMD_SOURCE_CHOOSE == ae.getActionCommand()) {
-			choseFile();
-			this.toolBarPanel.clickStopButton();
+			if (choseFile()) {
+				this.toolBarPanel.clickStopButton();
+			}
 		}
+	}
 
+	private boolean choseFile() {
+		int returnVal = fileChooser.showOpenDialog(ControlPanel.this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			this.sourceFile = file;
+			setTitle("Selected");
+			return true;
+		} else {
+			taskOutput.append("open file error\n");
+			return false;
+		}
+	}
+
+	private void setTitle(String title) {
+		this.frame.setTitle(title + " - " + this.sourceFile.getAbsolutePath() + " - smallcrab");
 	}
 
 	/**
@@ -265,6 +312,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 	 */
 	private void pauseAnalyzing() {
 		analyzeTask.pause();
+		setTitle("Paused");
 	}
 
 	private void unpauseAnalyzing() {
@@ -276,16 +324,6 @@ public class ControlPanel extends JPanel implements ActionListener {
 	 */
 	private void stopAnalyzing() {
 		analyzeTask.stop();
-	}
-
-	private void choseFile() {
-		int returnVal = fileChooser.showOpenDialog(ControlPanel.this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile();
-			this.sourceFile = file;
-		} else {
-			taskOutput.append("open file error\n");
-		}
 	}
 
 }

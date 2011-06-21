@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.apache;
 
-import com.google.code.smallcrab.spliter.apache.ApacheLogSpliter;
+import com.google.code.smallcrab.spliter.apache.ApacheLogPackage;
 import com.google.code.smallcrab.utils.StringKit;
 
 /**
@@ -43,7 +43,7 @@ public abstract class AbstractContainApacheViewer extends ApacheLogLineViewer {
 	}
 
 	@Override
-	public String view(ApacheLogSpliter spliter) {
+	public String view(ApacheLogPackage spliter) {
 		String allView = this.getAllView(spliter);
 		String view = allView;
 		if (contained && StringKit.isNotEmpty(allView)) { // need check allview contains
@@ -54,6 +54,6 @@ public abstract class AbstractContainApacheViewer extends ApacheLogLineViewer {
 		return view;
 	}
 
-	protected abstract String getAllView(ApacheLogSpliter spliter);
+	protected abstract String getAllView(ApacheLogPackage spliter);
 
 }

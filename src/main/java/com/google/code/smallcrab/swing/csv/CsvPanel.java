@@ -1,15 +1,23 @@
 /**
  * 
  */
-package com.google.code.smallcrab.swing.iis;
+package com.google.code.smallcrab.swing.csv;
 
 import java.awt.GridBagLayout;
 import java.util.List;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 import com.google.code.smallcrab.analyze.FileLineAnalyzer;
+import com.google.code.smallcrab.analyze.java.CsvJavaScanner;
 import com.google.code.smallcrab.config.ConfigException;
 import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
+import com.google.code.smallcrab.utils.SwingKit;
 import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 
 /**
@@ -24,6 +32,27 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	public CsvPanel() {
 		super(new GridBagLayout());
 		setName("csv");
+
+		JPanel optionPanel = new JPanel();
+		JLabel spliterLabel = new JLabel("spliter:");
+		spliterLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		JTextField spliterTF = new JTextField();
+		spliterTF.setText(",");
+		optionPanel.add(spliterLabel);
+		optionPanel.add(spliterTF);
+		add(optionPanel, SwingKit.createVerticalGridBagConstraint(0, 0));
+
+		JLabel oneLabel = new JLabel("global variables:");
+		add(oneLabel, SwingKit.createVerticalGridBagConstraint(0, 1));
+
+		JTextArea scriptOne = new JTextArea(10, 20);
+		add(scriptOne, SwingKit.createVerticalGridBagConstraint(0, 2));
+
+		JLabel twoLabel = new JLabel("line iterate:");
+		add(twoLabel, SwingKit.createVerticalGridBagConstraint(0, 3));
+
+		JTextArea scriptTwo = new JTextArea(10, 20);
+		add(scriptTwo, SwingKit.createVerticalGridBagConstraint(0, 4));
 	}
 
 	/*
@@ -33,7 +62,6 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public void resetConfigOutput() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -44,7 +72,6 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	protected List<CsvLineViewer> prepareViewers() throws ConfigException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -55,8 +82,9 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		// TODO Auto-generated method stub
-		return null;
+		CsvJavaScanner scanner = new CsvJavaScanner();
+		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
+		return analyzer;
 	}
 
 	/*
@@ -66,7 +94,6 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	protected List<CsvLineMatcher> prepareMatchers() throws ConfigException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -77,7 +104,16 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public boolean isPrepared() {
-		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isAnalyzeAppend() {
+		return true;
+	}
+
+	@Override
+	public boolean isAnalyzeCount() {
 		return false;
 	}
 

@@ -9,7 +9,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
@@ -108,17 +110,36 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	public FileLineAnalyzer() {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.google.code.smallcrab.analyze.FileAnalyzer#analyze(java.io.File)
-	 */
-	@Override
-	public void analyze(final File file, final Map<String, Integer> result, final AnalyzeCallback callback) throws IOException {
-		final Thread analyzingThread = new Thread(new Runnable() {
+	interface LineConsumer {
+		void consume(String[] linePackage);
+	}
 
-			private void consume(String strLine) {
-				String[] lineResult = lineScanner.scan(strLine);
+	public void analyzeAppend(final File file, final Map<String, Set<String>> result, final AnalyzeCallback callback) throws IOException {
+		this.analyze(file, new LineConsumer() {
+
+			@Override
+			public void consume(String[] lineResult) {
+				if (ArrayKit.isNotEmpty(lineResult)) {
+					String key = lineResult[0];
+					String value = lineResult[1];
+					Set<String> originValue = result.get(key);
+					if (originValue == null) {
+						originValue = new HashSet<String>();
+						result.put(key, originValue);
+					}
+					originValue.add(value);
+				}
+
+			}
+		}, callback);
+	}
+
+	@Override
+	public void analyzeCount(final File file, final Map<String, Integer> result, final AnalyzeCallback callback) throws IOException {
+		this.analyze(file, new LineConsumer() {
+
+			@Override
+			public void consume(String[] lineResult) {
 				if (ArrayKit.isNotEmpty(lineResult)) {
 					StringBuilder keyBuffer = new StringBuilder();
 					for (String resultSegment : lineResult) {
@@ -132,7 +153,13 @@ public class FileLineAnalyzer implements FileAnalyzer {
 					count = count == null ? 0 : count;
 					result.put(key, ++count);
 				}
+
 			}
+		}, callback);
+	}
+
+	public void analyze(final File file, final LineConsumer lineConsumer, final AnalyzeCallback callback) throws IOException {
+		final Thread analyzingThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -147,7 +174,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 						continue;
 					}
 					if (paused) {
-						System.err.println("paused consume");
+						println("paused");
 						pausedLock.lock();
 						try {
 							pausedCondition.await();
@@ -158,13 +185,17 @@ public class FileLineAnalyzer implements FileAnalyzer {
 						}
 					}
 					if (strLine == eof) {
+						println("readed eof");
 						callback.callback();
-						finished = true;
-						System.err.println("readed eof and enable finished flag");
+						if (finished == false) {
+							finished = true;
+							println("enable finished flag");
+						}
 						break;
 					}
 					try {
-						consume((String) strLine);
+						String[] lineResult = lineScanner.scan((String) strLine);
+						lineConsumer.consume(lineResult);
 					} catch (Throwable e) {
 						invalidLines++;
 					}
@@ -177,12 +208,13 @@ public class FileLineAnalyzer implements FileAnalyzer {
 				callback.setTotalLines(lineNumber);// set total analyzed lines
 				callback.setInvalidLines(invalidLines);
 				linePool.clear();// clear and unblock the queue
-				System.err.println("analyzing thread finished");
+				println("finished");
 				awaitFinish();// await for readline thread finished
 			}// end run()
 		});// end new analyzing thread
 
-		analyzingThread.setName("sc-scan-1");
+		analyzingThread.setName("AnalyzeThread-1");
+		println("starting " + analyzingThread.getName());
 		analyzingThread.start();
 		InputStream in = null;
 		long start = System.currentTimeMillis();
@@ -192,7 +224,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 			String strLine;
 			while ((strLine = br.readLine()) != null) {
 				if (linePool.size() == MAX_LINE_POOL_SIZE) {
-					System.err.println("LINE POOL OVERFLOW:" + linePool.size());
+					println("LINE POOL OVERFLOW:" + linePool.size());
 				}
 				if (!this.finished) { // call finished() when reading lines
 					try {
@@ -201,7 +233,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 						e.printStackTrace();
 					}
 				} else {
-					System.err.println("finished flag enable");
+					println("finished this analyzing outside");
 					break;
 				}
 			}
@@ -213,9 +245,13 @@ public class FileLineAnalyzer implements FileAnalyzer {
 		if (!this.finished) { // not call finished() outside
 			this.finish();
 		}
-		System.err.println("readline thread finished");
+		println("finished this analyzing");
 		awaitFinish();// await for analyzing thread finished
 		analyzePeriod = System.currentTimeMillis() - start;
+	}
+
+	private void println(String msg) {
+		System.err.println(Thread.currentThread().getName() + " -- " + msg);
 	}
 
 	private void awaitFinish() {

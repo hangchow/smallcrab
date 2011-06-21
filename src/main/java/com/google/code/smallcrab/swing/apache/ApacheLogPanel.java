@@ -25,7 +25,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
 import com.google.code.smallcrab.analyze.FileLineAnalyzer;
-import com.google.code.smallcrab.analyze.apache.ApacheScanner;
+import com.google.code.smallcrab.analyze.apache.ApacheCountScanner;
 import com.google.code.smallcrab.config.ConfigException;
 import com.google.code.smallcrab.matcher.apache.ApacheAgentMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheCodeMatcher;
@@ -118,7 +118,7 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 	 * @throws ConfigException
 	 * 
 	 */
-	protected List<ApacheLogLineViewer> prepareViewers()  {
+	protected List<ApacheLogLineViewer> prepareViewers() {
 		List<ApacheLogLineViewer> lineViewers = new ArrayList<ApacheLogLineViewer>();
 		TableModel viewModel = this.apacheViewTable.getModel();
 		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
@@ -155,7 +155,7 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 		return lineViewers;
 	}
 
-	protected List<ApacheLogLineMatcher> prepareMatchers(){
+	protected List<ApacheLogLineMatcher> prepareMatchers() {
 		List<ApacheLogLineMatcher> lineMatchers = new ArrayList<ApacheLogLineMatcher>();
 		TableModel matchModel = this.apacheMatchTable.getModel();
 		for (int rowIndex = 0; rowIndex < matchModel.getRowCount(); rowIndex++) {
@@ -208,7 +208,7 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 		this.apacheConfigOutput.setText(output);
 	}
 
-	private void outputViewConfigError(String option)  {
+	private void outputViewConfigError(String option) {
 		String output = null;
 		if (option != null) {
 			output = "Please check view config: " + option + ".";
@@ -225,7 +225,7 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		ApacheScanner scanner = new ApacheScanner();
+		ApacheCountScanner scanner = new ApacheCountScanner();
 		scanner.setLineViewers(this.prepareViewers());
 		scanner.setLineMatchers(this.prepareMatchers());
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
@@ -247,9 +247,19 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 				checkedNum++;
 		}
 		if (checkedNum == 0) {
-			outputViewConfigError("Please set any View Configs!");
+			outputViewConfigError(null);
 			return false;
 		}
+		return true;
+	}
+
+	@Override
+	public boolean isAnalyzeAppend() {
+		return false;
+	}
+
+	@Override
+	public boolean isAnalyzeCount() {
 		return true;
 	}
 

@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.matcher.apache;
 
-import com.google.code.smallcrab.spliter.apache.ApacheLogSpliter;
+import com.google.code.smallcrab.spliter.apache.ApacheLogPackage;
 import com.google.code.smallcrab.utils.StringKit;
 
 /**
@@ -43,7 +43,7 @@ public abstract class AbstractContainApacheMatcher extends ApacheLogLineMatcher 
 	}
 
 	@Override
-	public boolean match(ApacheLogSpliter spliter) {
+	public boolean match(ApacheLogPackage spliter) {
 		String v = getAllView(spliter);
 		if (StringKit.isEmpty(v)) {
 			return false; // v is empty but contain is not empty, not equals
@@ -51,6 +51,6 @@ public abstract class AbstractContainApacheMatcher extends ApacheLogLineMatcher 
 		return v.contains(contain);
 	}
 
-	protected abstract String getAllView(ApacheLogSpliter spliter);
+	protected abstract String getAllView(ApacheLogPackage spliter);
 
 }

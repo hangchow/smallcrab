@@ -79,4 +79,14 @@ public class IisLogPanel extends AnalyzeConfigPanel<IisLogLineViewer, IisLogLine
 		return false;
 	}
 
+	@Override
+	public boolean isAnalyzeAppend() {
+		return false;
+	}
+
+	@Override
+	public boolean isAnalyzeCount() {
+		return true;
+	}
+
 }

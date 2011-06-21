@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.iis;
 
-import com.google.code.smallcrab.spliter.iis.IisLogSpliter;
+import com.google.code.smallcrab.spliter.iis.IisLogPackage;
 import com.google.code.smallcrab.viewer.LineViewer;
 
 /**
@@ -11,6 +11,6 @@ import com.google.code.smallcrab.viewer.LineViewer;
  * @date Jun 16, 2011
  *
  */
-public abstract class IisLogLineViewer implements LineViewer<IisLogSpliter> {
+public abstract class IisLogLineViewer implements LineViewer<IisLogPackage> {
 
 }

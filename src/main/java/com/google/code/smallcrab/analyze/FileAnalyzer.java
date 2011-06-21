@@ -6,29 +6,43 @@ package com.google.code.smallcrab.analyze;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * @author lin.wangl
- * 
+ * @author seanlinwang at gmail dot com
+ * @date 2011-6-20
  */
 public interface FileAnalyzer {
 
 	/**
 	 * @param source
-	 *            the file for analyzing s * @param callback analyze callback
+	 *            the file for analyzing
+	 * @param callback
+	 *            analyze callback
 	 * @param result
 	 *            analyzed result
 	 * @throws IOException
 	 */
-	void analyze(File source, Map<String, Integer> result, AnalyzeCallback callback) throws IOException;
+	void analyzeAppend(final File source, final Map<String, Set<String>> result, final AnalyzeCallback callback) throws IOException;
 
 	/**
-	 * @return a flag indicate analyze task running status : true/finished or false/running
+	 * @param source
+	 *            the file for analyzing
+	 * @param callback
+	 *            analyze callback
+	 * @param result
+	 *            analyzed result
+	 * @throws IOException
+	 */
+	void analyzeCount(final File source, final Map<String, Integer> result, final AnalyzeCallback callback) throws IOException;
+
+	/**
+	 * @return a flag indicate analyzing finished or not
 	 */
 	boolean isFinished();
 
 	/**
-	 * @return
+	 * @return a flag indicate analyzing paused or not
 	 */
 	boolean isPaused();
 

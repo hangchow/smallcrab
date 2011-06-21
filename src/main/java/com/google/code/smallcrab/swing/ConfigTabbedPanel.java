@@ -7,7 +7,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeListener;
 
 import com.google.code.smallcrab.swing.apache.ApacheLogPanel;
-import com.google.code.smallcrab.swing.iis.CsvPanel;
+import com.google.code.smallcrab.swing.csv.CsvPanel;
 import com.google.code.smallcrab.swing.iis.IisLogPanel;
 
 /**

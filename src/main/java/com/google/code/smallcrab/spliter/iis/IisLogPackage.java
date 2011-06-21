@@ -1,16 +1,16 @@
 /**
  * 
  */
-package com.google.code.smallcrab.spliter.csv;
+package com.google.code.smallcrab.spliter.iis;
 
-import com.google.code.smallcrab.scan.LineSpliter;
+import com.google.code.smallcrab.scan.LinePackege;
 
 /**
  * @author seanlinwang at gmail dot com
  * @date Jun 16, 2011
  *
  */
-public class CsvSpliter implements LineSpliter {
+public class IisLogPackage implements LinePackege {
 
 	/* (non-Javadoc)
 	 * @see com.google.code.smallcrab.scan.LineSpliter#split(java.lang.String)
@@ -19,6 +19,12 @@ public class CsvSpliter implements LineSpliter {
 	public void split(String line) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public String c(int columnIndex) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

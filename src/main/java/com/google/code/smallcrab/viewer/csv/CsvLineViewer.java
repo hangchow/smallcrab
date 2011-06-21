@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.csv;
 
-import com.google.code.smallcrab.spliter.csv.CsvSpliter;
+import com.google.code.smallcrab.spliter.csv.CsvPackage;
 import com.google.code.smallcrab.viewer.LineViewer;
 
 /**
@@ -11,13 +11,13 @@ import com.google.code.smallcrab.viewer.LineViewer;
  * @date Jun 16, 2011
  *
  */
-public class CsvLineViewer implements LineViewer<CsvSpliter> {
+public class CsvLineViewer implements LineViewer<CsvPackage> {
 
 	/* (non-Javadoc)
 	 * @see com.google.code.smallcrab.viewer.LineViewer#view(com.google.code.smallcrab.scan.LineSpliter)
 	 */
 	@Override
-	public String view(CsvSpliter spliter) {
+	public String view(CsvPackage spliter) {
 		// TODO Auto-generated method stub
 		return null;
 	}

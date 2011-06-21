@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.spliter.apache;
 
-import com.google.code.smallcrab.scan.LineSpliter;
+import com.google.code.smallcrab.scan.LinePackege;
 import com.google.code.smallcrab.utils.ApacheLogHelper;
 import com.google.code.smallcrab.utils.UrlKit;
 
@@ -11,7 +11,7 @@ import com.google.code.smallcrab.utils.UrlKit;
  * @author xalinx at gmail dot com
  * @date Dec 29, 2010
  */
-public class ApacheLogSpliter implements LineSpliter {
+public class ApacheLogPackage implements LinePackege {
 	/**
 	 * String[]{host0, period1, time2, method3, url4, code5, size6, referrer7, agent8}
 	 */
@@ -134,6 +134,11 @@ public class ApacheLogSpliter implements LineSpliter {
 	 */
 	public String getLine() {
 		return line;
+	}
+
+	@Override
+	public String c(int columnIndex) {
+		return segs[columnIndex];
 	}
 
 }
