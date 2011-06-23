@@ -1,9 +1,9 @@
 /**
  * 
  */
-package com.google.code.smallcrab.spliter.apache;
+package com.google.code.smallcrab.protocol.apache;
 
-import com.google.code.smallcrab.scan.LinePackege;
+import com.google.code.smallcrab.protocol.LinePackege;
 import com.google.code.smallcrab.utils.ApacheLogHelper;
 import com.google.code.smallcrab.utils.UrlKit;
 

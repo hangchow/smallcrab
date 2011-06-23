@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.apache;
 
-import com.google.code.smallcrab.spliter.apache.ApacheLogPackage;
+import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
 import com.google.code.smallcrab.utils.StringKit;
 import com.google.code.smallcrab.utils.UrlKit;
 

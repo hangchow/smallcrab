@@ -1,9 +1,9 @@
 /**
  * 
  */
-package com.google.code.smallcrab.spliter.csv;
+package com.google.code.smallcrab.protocol.csv;
 
-import com.google.code.smallcrab.scan.LinePackege;
+import com.google.code.smallcrab.protocol.LinePackege;
 import com.google.code.smallcrab.utils.StringKit;
 
 /**

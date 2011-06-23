@@ -4,7 +4,7 @@
 package com.google.code.smallcrab.matcher.iis;
 
 import com.google.code.smallcrab.matcher.LineMatcher;
-import com.google.code.smallcrab.spliter.iis.IisLogPackage;
+import com.google.code.smallcrab.protocol.iis.IisLogPackage;
 
 /**
  * @author seanlinwang at gmail dot com

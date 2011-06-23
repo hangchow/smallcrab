@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.code.smallcrab.analyze.LineScanner;
 import com.google.code.smallcrab.matcher.LineMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheLogLineMatcher;
-import com.google.code.smallcrab.spliter.apache.ApacheLogPackage;
+import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
 import com.google.code.smallcrab.viewer.LineViewer;
 import com.google.code.smallcrab.viewer.apache.ApacheLogLineViewer;
 

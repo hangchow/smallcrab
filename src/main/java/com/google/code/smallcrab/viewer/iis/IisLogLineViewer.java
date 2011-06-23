@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.iis;
 
-import com.google.code.smallcrab.spliter.iis.IisLogPackage;
+import com.google.code.smallcrab.protocol.iis.IisLogPackage;
 import com.google.code.smallcrab.viewer.LineViewer;
 
 /**

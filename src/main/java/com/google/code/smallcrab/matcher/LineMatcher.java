@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.matcher;
 
-import com.google.code.smallcrab.scan.LinePackege;
+import com.google.code.smallcrab.protocol.LinePackege;
 
 /**
  * @author xalinx at gmail dot com

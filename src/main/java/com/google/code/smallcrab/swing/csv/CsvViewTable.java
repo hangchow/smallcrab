@@ -1,22 +1,14 @@
-/**
- * 
- */
-package com.google.code.smallcrab.swing.apache;
-
+package com.google.code.smallcrab.swing.csv;
 
 import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import com.google.code.smallcrab.swing.TableRowRenderer;
 import com.google.code.smallcrab.swing.utils.ColumnResizer;
 
-/**
- * @author xalinx at gmail dot com
- * @date Dec 30, 2010
- */
-public abstract class ApacheConfigTable extends JTable {
-
+public class CsvViewTable extends JTable {
 	private static final long serialVersionUID = -250334773896895882L;
 
 	/**
@@ -24,7 +16,7 @@ public abstract class ApacheConfigTable extends JTable {
 	 * @param dm
 	 * @param cm
 	 */
-	public ApacheConfigTable(ApacheViewTableModel tableModel) {
+	public CsvViewTable(AbstractTableModel tableModel) {
 		super(tableModel);
 		this.setRowHeight(20);
 		ColumnResizer.adjustColumnPreferredWidths(this, 1);

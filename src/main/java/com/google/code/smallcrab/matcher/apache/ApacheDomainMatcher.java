@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.matcher.apache;
 
-import com.google.code.smallcrab.spliter.apache.ApacheLogPackage;
+import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
 
 /**
  * @author xalinx at gmail dot com

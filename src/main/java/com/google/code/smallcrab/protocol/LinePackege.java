@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.google.code.smallcrab.scan;
+package com.google.code.smallcrab.protocol;
 
 /**
  * @author xalinx at gmail dot com

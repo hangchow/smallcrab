@@ -1,9 +1,9 @@
 /**
  * 
  */
-package com.google.code.smallcrab.spliter.iis;
+package com.google.code.smallcrab.protocol.iis;
 
-import com.google.code.smallcrab.scan.LinePackege;
+import com.google.code.smallcrab.protocol.LinePackege;
 
 /**
  * @author seanlinwang at gmail dot com

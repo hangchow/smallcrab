@@ -4,7 +4,7 @@
 package com.google.code.smallcrab.analyze.java;
 
 import com.google.code.smallcrab.analyze.LineScanner;
-import com.google.code.smallcrab.spliter.csv.CsvPackage;
+import com.google.code.smallcrab.protocol.csv.CsvPackage;
 
 /**
  * @author seanlinwang at gmail dot com

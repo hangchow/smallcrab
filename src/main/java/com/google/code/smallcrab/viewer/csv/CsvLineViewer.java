@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.csv;
 
-import com.google.code.smallcrab.spliter.csv.CsvPackage;
+import com.google.code.smallcrab.protocol.csv.CsvPackage;
 import com.google.code.smallcrab.viewer.LineViewer;
 
 /**
