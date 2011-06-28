@@ -147,7 +147,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 
 		private void outputAnalyzeStart(final long totalLength) {
 			taskOutput.append("===============================================\n");
-			taskOutput.append("= Size:" + totalLength + "\n");
+			taskOutput.append("= Size:" + totalLength + "bytes\n");
 		}
 
 		private void stopAnalyzeCount(FileLineAnalyzer ala, final long totalLength, Map<String, Integer> map, final AnalyzeCallback ac) {
@@ -156,8 +156,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
 			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
 			taskOutput.append("===============================================\n");
-			@SuppressWarnings("unchecked")
-			Entry<String, Integer>[] resultArray = (Entry<String, Integer>[]) map.entrySet().toArray();
+			Object[] resultArray = map.entrySet().toArray();
 			Arrays.sort(resultArray, new Comparator<Object>() {
 				@SuppressWarnings("unchecked")
 				@Override
@@ -166,7 +165,8 @@ public class ControlPanel extends JPanel implements ActionListener {
 				}
 			});
 			for (int i = 0; i < resultArray.length; i++) {
-				Entry<String, Integer> next = resultArray[i];
+				@SuppressWarnings("unchecked")
+				Entry<String, Integer> next = (Entry<String, Integer>)resultArray[i];
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
 			}
 			toolBarPanel.clickStopButton();
@@ -203,7 +203,9 @@ public class ControlPanel extends JPanel implements ActionListener {
 		 * 
 		 */
 		public void stop() {
-			this.analyzer.finish();
+			if (null != this.analyzer) {
+				this.analyzer.finish();
+			}
 		}
 	}
 

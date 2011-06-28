@@ -17,11 +17,11 @@ import com.google.code.smallcrab.viewer.iis.IisLogLineViewer;
  * @date Jun 16, 2011
  * 
  */
-public class IisLogPanel extends AnalyzeConfigPanel<IisLogLineViewer, IisLogLineMatcher> {
+public class IisPanel extends AnalyzeConfigPanel<IisLogLineViewer, IisLogLineMatcher> {
 
 	private static final long serialVersionUID = -4148324874328833373L;
 
-	public IisLogPanel() {
+	public IisPanel() {
 		super(new GridBagLayout());
 		setName("iis");
 	}

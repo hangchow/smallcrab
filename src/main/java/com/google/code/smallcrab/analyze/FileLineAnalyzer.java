@@ -31,7 +31,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	/**
 	 * max file line pool size
 	 */
-	private static final int MAX_LINE_POOL_SIZE = 1024 * 10;
+	private static final int MAX_LINE_POOL_SIZE = 1024 * 100;
 
 	/**
 	 * file line scanner

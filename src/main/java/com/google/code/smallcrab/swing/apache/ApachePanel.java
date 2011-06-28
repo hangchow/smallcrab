@@ -56,7 +56,7 @@ import com.google.code.smallcrab.viewer.apache.ApacheReferrerViewer;
  * @date Jun 16, 2011
  * 
  */
-public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheLogLineMatcher> {
+public class ApachePanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheLogLineMatcher> {
 
 	private static final long serialVersionUID = 2761139314517046734L;
 
@@ -66,7 +66,7 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 
 	private JLabel apacheConfigOutput;
 
-	public ApacheLogPanel() {
+	public ApachePanel() {
 		super(new GridBagLayout());
 		setName("apache");
 
@@ -147,8 +147,6 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 				viewer = new ApacheIPViewer(value);
 			} else if (ALL.equals(option)) {
 				viewer = new ApacheAllViewer(value);
-			} else {
-				outputViewConfigError(option);
 			}
 			lineViewers.add(viewer);
 		}
@@ -165,19 +163,12 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 			if (!checked) {
 				continue;
 			}
-			if (StringKit.isEmpty(value)) {
-				outputMatchConfigError(option);
-			}
 			ApacheLogLineMatcher matcher = null;
 			if (DOMAIN.equals(option)) {
 				matcher = new ApacheDomainMatcher(value);
 			} else if (QUERY.equals(option)) {
 				String[] kv = StringKit.split(value, '=');
-				if (kv.length == 2) {
-					matcher = new ApacheQueryMatcher(kv[0], kv[1]);
-				} else {
-					outputMatchConfigError(option);
-				}
+				matcher = new ApacheQueryMatcher(kv[0], kv[1]);
 			} else if (PATH.equals(option)) {
 				matcher = new ApachePathMatcher(value);
 			} else if (REFERRER.equals(option)) {
@@ -190,28 +181,26 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 				matcher = new ApacheAgentMatcher(value);
 			} else if (IP.equals(option)) {
 				matcher = new ApacheIPMatcher(value);
-			} else {
-				outputMatchConfigError(option);
 			}
 			lineMatchers.add(matcher);
 		}
 		return lineMatchers;
 	}
 
-	private void outputMatchConfigError(String option) {
+	private void outputMatchConfigError(String option, String value) {
 		String output = null;
 		if (option != null) {
-			output = "Please check match config: " + option + ".";
+			output = String.format("Please check match config [option:%s,value:%s].", option, value);
 		} else {
 			output = "Please check match configs.";
 		}
 		this.apacheConfigOutput.setText(output);
 	}
 
-	private void outputViewConfigError(String option) {
+	private void outputViewConfigError(String option, String value) {
 		String output = null;
 		if (option != null) {
-			output = "Please check view config: " + option + ".";
+			output = String.format("Please check view config [option:%s,value:%s].", option, value);
 		} else {
 			output = "Please check view configs.";
 		}
@@ -239,16 +228,63 @@ public class ApacheLogPanel extends AnalyzeConfigPanel<ApacheLogLineViewer, Apac
 	 */
 	@Override
 	public boolean isPrepared() throws ConfigException {
+		// check if view is prepared
 		TableModel viewModel = this.apacheViewTable.getModel();
 		int checkedNum = 0;
 		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
+			String option = (String) viewModel.getValueAt(rowIndex, 0);
+			String value = (String) viewModel.getValueAt(rowIndex, 1);
 			boolean checked = (Boolean) viewModel.getValueAt(rowIndex, 2);
 			if (checked)
 				checkedNum++;
+			if (DOMAIN.equals(option)) {
+			} else if (QUERY.equals(option)) {
+			} else if (PATH.equals(option)) {
+			} else if (REFERRER.equals(option)) {
+			} else if (CODE.equals(option)) {
+			} else if (METHOD.equals(option)) {
+			} else if (AGENT.equals(option)) {
+			} else if (IP.equals(option)) {
+			} else if (ALL.equals(option)) {
+			} else {
+				outputViewConfigError(option, value);
+				return false;
+			}
 		}
 		if (checkedNum == 0) {
-			outputViewConfigError(null);
+			outputViewConfigError(null, null);
 			return false;
+		}
+		// check if config is prepared
+		TableModel matchModel = this.apacheMatchTable.getModel();
+		for (int rowIndex = 0; rowIndex < matchModel.getRowCount(); rowIndex++) {
+			String option = (String) matchModel.getValueAt(rowIndex, 0);
+			String value = (String) matchModel.getValueAt(rowIndex, 1);
+			boolean checked = (Boolean) matchModel.getValueAt(rowIndex, 2);
+			if (!checked) {
+				continue;
+			}
+			if (StringKit.isEmpty(value)) {
+				outputMatchConfigError(option, value);
+				return false;
+			}
+			if (DOMAIN.equals(option)) {
+			} else if (QUERY.equals(option)) {
+				String[] kv = StringKit.split(value, '=');
+				if (kv.length != 2) {
+					outputMatchConfigError(option, value);
+					return false;
+				}
+			} else if (PATH.equals(option)) {
+			} else if (REFERRER.equals(option)) {
+			} else if (CODE.equals(option)) {
+			} else if (METHOD.equals(option)) {
+			} else if (AGENT.equals(option)) {
+			} else if (IP.equals(option)) {
+			} else {
+				outputMatchConfigError(option, value);
+				return false;
+			}
 		}
 		return true;
 	}
