@@ -4,7 +4,6 @@
 package com.google.code.smallcrab.protocol.apache;
 
 import com.google.code.smallcrab.protocol.LinePackege;
-import com.google.code.smallcrab.utils.ApacheLogHelper;
 import com.google.code.smallcrab.utils.UrlKit;
 
 /**
@@ -137,7 +136,7 @@ public class ApacheLogPackage implements LinePackege {
 	}
 
 	@Override
-	public String c(int columnIndex) {
+	public String column(int columnIndex) {
 		return segs[columnIndex];
 	}
 

@@ -22,7 +22,7 @@ public class IisLogPackage implements LinePackege {
 	}
 
 	@Override
-	public String c(int columnIndex) {
+	public String column(int columnIndex) {
 		// TODO Auto-generated method stub
 		return null;
 	}

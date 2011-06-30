@@ -3,32 +3,29 @@
  */
 package com.google.code.smallcrab.swing.csv;
 
-import java.awt.GridBagLayout;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 import com.google.code.smallcrab.analyze.FileLineAnalyzer;
-import com.google.code.smallcrab.analyze.java.CsvJavaScanner;
-import com.google.code.smallcrab.config.ConfigException;
+import com.google.code.smallcrab.analyze.csv.CsvXYSplotsScanner;
 import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
+import com.google.code.smallcrab.swing.utils.ColumnResizer;
 import com.google.code.smallcrab.utils.StringKit;
-import com.google.code.smallcrab.utils.SwingKit;
 import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 
 /**
@@ -39,29 +36,45 @@ import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> {
 
 	private static final long serialVersionUID = -1486532994587869954L;
+	private CsvViewConfigTable csvViewConfigTable;
 
 	public CsvPanel() {
-		super(new GridBagLayout());
+		super(new BorderLayout());
 		setName("csv");
 
-		JPanel optionPanel = new JPanel();
-		JLabel spliterLabel = new JLabel("spliter:");
-		spliterLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		JTextField spliterTF = new JTextField();
-		spliterTF.setText(",");
-		optionPanel.add(spliterLabel);
-		optionPanel.add(spliterTF);
-		add(optionPanel, SwingKit.createVerticalGridBagConstraint(0, 0));
+		repaintConfigTable(new String[] { "column one", "column two", "column three" });
+	}
 
-		JLabel oneLabel = new JLabel("preproccess:");
-		add(oneLabel, SwingKit.createVerticalGridBagConstraint(0, 1));
+	@Override
+	public void notifyFileChange(File file) throws IOException {
 
-		JLabel scriptLabel = new JLabel("script:");
-		add(scriptLabel, SwingKit.createVerticalGridBagConstraint(0, 3));
+		InputStream in = null;
+		String line = null;
+		try {
+			in = new FileInputStream(file);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			line = br.readLine();
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+		}
+		String[] csvColumns = StringKit.split(line, ',');
 
-		JTextArea scriptOne = new JTextArea(10, 20);
-		add(scriptOne, SwingKit.createVerticalGridBagConstraint(0, 4));
+		repaintConfigTable(csvColumns);
+	}
 
+	private void repaintConfigTable(String[] csvColumns) {
+		this.removeAll();
+		this.add(new JLabel("view config", SwingConstants.LEFT), BorderLayout.NORTH);
+
+		this.csvViewConfigTable = new CsvViewConfigTable(csvColumns);
+		int tablePreferredWidth = ColumnResizer.getTablePreferredWidth(csvViewConfigTable);
+		this.csvViewConfigTable.setPreferredScrollableViewportSize(new Dimension(tablePreferredWidth + 30, 350));
+		ColumnResizer.setFixColumnWidth(this.csvViewConfigTable, 2, 35);
+		JScrollPane scrollPane = new JScrollPane(csvViewConfigTable);
+		this.add(scrollPane, BorderLayout.CENTER);
+		this.repaint();
 	}
 
 	/*
@@ -80,8 +93,25 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 * @see com.google.code.smallcrab.swing.AnalyzeConfigPanel#prepareViewers()
 	 */
 	@Override
-	protected List<CsvLineViewer> prepareViewers() throws ConfigException {
-		return null;
+	protected List<CsvLineViewer> prepareViewers() {
+		List<CsvLineViewer> viewers = new ArrayList<CsvLineViewer>();
+		TableModel viewModel = this.csvViewConfigTable.getModel();
+		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
+			boolean used = (Boolean) viewModel.getValueAt(rowIndex, 2);
+			if (used) {
+				String axisSelect = (String) viewModel.getValueAt(rowIndex, 1);
+				if (axisSelect.equals(CsvViewTableModel.axises[1])) { // x axis
+					CsvLineViewer xAxislineViewer = new CsvLineViewer(rowIndex);
+					xAxislineViewer.setXAxis(true);
+					viewers.add(xAxislineViewer);
+				} else if (axisSelect.equals(CsvViewTableModel.axises[2])) {// y axis
+					CsvLineViewer yAxisLineViewer = new CsvLineViewer(rowIndex);
+					yAxisLineViewer.setYAxis(true);
+					viewers.add(yAxisLineViewer);
+				}
+			}
+		}
+		return viewers;
 	}
 
 	/*
@@ -91,7 +121,9 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		CsvJavaScanner scanner = new CsvJavaScanner();
+		CsvXYSplotsScanner scanner = new CsvXYSplotsScanner();
+		scanner.setLineViewers(this.prepareViewers());
+		scanner.setLineMatchers(this.prepareMatchers());
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
 		return analyzer;
 	}
@@ -102,116 +134,8 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 * @see com.google.code.smallcrab.swing.AnalyzeConfigPanel#prepareMatchers()
 	 */
 	@Override
-	protected List<CsvLineMatcher> prepareMatchers() throws ConfigException {
+	protected List<CsvLineMatcher> prepareMatchers() {
 		return null;
-	}
-
-	private Object[][] data;
-	String[] comboTypes = { "", "selected", "merge" };
-
-	public void initConfig(File file) throws IOException {
-		InputStream in = null;
-		String line = null;
-		try {
-			in = new FileInputStream(file);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			line = br.readLine();
-		} finally {
-			if (in != null) {
-				in.close();
-			}
-		}
-		String[] lineOneSegs = StringKit.split(line, ',');
-		data = new Object[lineOneSegs.length][2];
-		for (int i = 0; i < data.length; i++) {
-			data[i][0] = lineOneSegs[i];
-			JComboBox comboTypesList = new JComboBox(comboTypes);
-			data[i][1] = comboTypesList;
-			comboTypesList.setSelectedIndex(0);
-		}
-
-	}
-
-	class CsvViewTableModel extends AbstractTableModel implements TableModelListener {
-
-		private static final long serialVersionUID = 1088594001477114033L;
-		private final String[] header = new String[] { "column", "option" };
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.swing.table.TableModel#getColumnCount()
-		 */
-		@Override
-		public int getColumnCount() {
-			return header.length;
-		}
-
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return getValueAt(0, columnIndex).getClass();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.swing.table.TableModel#getColumnName(int)
-		 */
-		@Override
-		public String getColumnName(int columnIndex) {
-			return header[columnIndex];
-		}
-
-		@Override
-		public int getRowCount() {
-			return getData().length;
-		}
-
-		protected Object[][] getData() {
-			return data;
-		}
-
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			return getData()[rowIndex][columnIndex];
-		}
-
-		@Override
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			if (columnIndex == 0) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-
-		@Override
-		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			getData()[rowIndex][columnIndex] = aValue;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.swing.event.TableModelListener#tableChanged(javax.swing.event.TableModelEvent)
-		 */
-		@Override
-		public void tableChanged(TableModelEvent e) {
-			switch (e.getType()) {
-			case TableModelEvent.DELETE:
-			case TableModelEvent.UPDATE:
-				if (e.getColumn() == TableModelEvent.ALL_COLUMNS)
-					;
-				else
-					;
-				break;
-			case TableModelEvent.INSERT:
-				break;
-			default:
-			}
-
-		}
-
 	}
 
 	/*
@@ -221,21 +145,25 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public boolean isPrepared() {
-		if (data != null) {
-			return true;
-		} else {
+		// check if view is prepared
+		TableModel viewModel = this.csvViewConfigTable.getModel();
+		int checkedNum = 0;
+		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
+			// String option = (String) viewModel.getValueAt(rowIndex, 0);
+			// String value = (String) viewModel.getValueAt(rowIndex, 1);
+			boolean checked = (Boolean) viewModel.getValueAt(rowIndex, 2);
+			if (checked)
+				checkedNum++;
+		}
+		if (checkedNum == 0) {
 			return false;
 		}
-	}
-
-	@Override
-	public boolean isAnalyzeAppend() {
 		return true;
 	}
 
 	@Override
-	public boolean isAnalyzeCount() {
-		return false;
+	public boolean isAnalyzeXYSplots() {
+		return true;
 	}
 
 }

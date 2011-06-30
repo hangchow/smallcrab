@@ -4,6 +4,8 @@
 package com.google.code.smallcrab.swing;
 
 import java.awt.LayoutManager;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -40,9 +42,17 @@ public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends Li
 	 */
 	public abstract boolean isPrepared() throws ConfigException;
 
-	public abstract boolean isAnalyzeAppend();
+	public boolean isAnalyzeAppend() {
+		return false;
+	}
 
-	public abstract boolean isAnalyzeCount();
+	public boolean isAnalyzeCount() {
+		return false;
+	}
+
+	public boolean isAnalyzeXYSplots() {
+		return false;
+	}
 
 	/**
 	 * @return
@@ -54,5 +64,11 @@ public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends Li
 	 * @throws ConfigException
 	 */
 	protected abstract List<lv> prepareViewers() throws ConfigException;
+
+	/**
+	 * @param logFile
+	 * @throws IOException
+	 */
+	protected abstract void notifyFileChange(File logFile) throws IOException;
 
 }

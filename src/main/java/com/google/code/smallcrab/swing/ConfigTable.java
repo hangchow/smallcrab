@@ -1,21 +1,23 @@
 /**
  * 
  */
-package com.google.code.smallcrab.swing.apache;
+package com.google.code.smallcrab.swing;
 
+import java.awt.Color;
 
+import javax.swing.BorderFactory;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
-import com.google.code.smallcrab.swing.TableRowRenderer;
 import com.google.code.smallcrab.swing.utils.ColumnResizer;
 
 /**
  * @author xalinx at gmail dot com
  * @date Dec 30, 2010
  */
-public abstract class ApacheConfigTable extends JTable {
+public abstract class ConfigTable extends JTable {
 
 	private static final long serialVersionUID = -250334773896895882L;
 
@@ -24,22 +26,14 @@ public abstract class ApacheConfigTable extends JTable {
 	 * @param dm
 	 * @param cm
 	 */
-	public ApacheConfigTable(ApacheViewTableModel tableModel) {
+	public ConfigTable(TableModel tableModel) {
 		super(tableModel);
 		this.setRowHeight(20);
 		ColumnResizer.adjustColumnPreferredWidths(this, 1);
+		this.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		this.paintRow();
 	}
-
-	/**
-	 * 将列设置为固定宽度。//fix table column width
-	 * 
-	 */
-	public void setFixColumnWidth(int columnIndex, int width) {
-		this.setAutoResizeMode(AUTO_RESIZE_OFF);
-		TableColumnModel tcm = this.getTableHeader().getColumnModel();
-		TableColumn tc = tcm.getColumn(columnIndex);
-		tc.setPreferredWidth(width);
-	}
+	
 
 	public void paintRow() {
 		TableColumnModel tcm = this.getColumnModel();

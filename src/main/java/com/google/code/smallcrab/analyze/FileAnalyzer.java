@@ -5,6 +5,7 @@ package com.google.code.smallcrab.analyze;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +38,14 @@ public interface FileAnalyzer {
 	void analyzeCount(final File source, final Map<String, Integer> result, final AnalyzeCallback callback) throws IOException;
 
 	/**
+	 * @param source
+	 * @param result
+	 * @param callback
+	 * @throws IOException
+	 */
+	void analyzeXYSplots(final File source, final List<List<Double>> result, final Map<Double, Integer> xCount, final AnalyzeCallback callback) throws IOException;
+
+	/**
 	 * @return a flag indicate analyzing finished or not
 	 */
 	boolean isFinished();
@@ -45,5 +54,4 @@ public interface FileAnalyzer {
 	 * @return a flag indicate analyzing paused or not
 	 */
 	boolean isPaused();
-
 }

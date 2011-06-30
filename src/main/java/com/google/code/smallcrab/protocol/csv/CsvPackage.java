@@ -25,8 +25,12 @@ public class CsvPackage implements LinePackege {
 	}
 
 	@Override
-	public String c(int columnIndex) {
+	public String column(int columnIndex) {
 		return segs[columnIndex];
+	}
+
+	public String[] getColumns() {
+		return segs;
 	}
 
 }

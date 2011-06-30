@@ -4,6 +4,8 @@
 package com.google.code.smallcrab.swing.iis;
 
 import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import com.google.code.smallcrab.analyze.FileLineAnalyzer;
@@ -33,8 +35,12 @@ public class IisPanel extends AnalyzeConfigPanel<IisLogLineViewer, IisLogLineMat
 	 */
 	@Override
 	public void resetConfigOutput() {
-		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	protected void notifyFileChange(File logFile) throws IOException {
+		
 	}
 
 	/*

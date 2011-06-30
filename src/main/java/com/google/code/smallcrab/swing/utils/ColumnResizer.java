@@ -15,6 +15,11 @@ import javax.swing.table.TableColumnModel;
  * @date Jan 5, 2011
  */
 public class ColumnResizer {
+	/**
+	 * @param table
+	 * @param pad
+	 * @return
+	 */
 	public static void adjustColumnPreferredWidths(JTable table, int pad) {
 		// strategy - get max width for cells in column and make that the preferred width
 		TableColumnModel columnModel = table.getColumnModel();
@@ -30,4 +35,31 @@ public class ColumnResizer {
 			column.setPreferredWidth(maxwidth + pad * 2);
 		} // for col
 	}
+
+	/**
+	 * @param table
+	 * @param pad
+	 * @return
+	 */
+	public static int getTablePreferredWidth(JTable table) {
+		TableColumnModel columnModel = table.getColumnModel();
+		int allPreferredWidth = 0;
+		for (int col = 0; col < table.getColumnCount(); col++) {
+			TableColumn column = columnModel.getColumn(col);
+			allPreferredWidth += column.getPreferredWidth();
+		} // for col
+		return allPreferredWidth;
+	}
+
+	/**
+	 * 将列设置为固定宽度。//fix table column width
+	 * 
+	 */
+	public static void setFixColumnWidth(JTable table, int columnIndex, int width) {
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		TableColumnModel tcm = table.getTableHeader().getColumnModel();
+		TableColumn tc = tcm.getColumn(columnIndex);
+		tc.setPreferredWidth(width);
+	}
+
 }

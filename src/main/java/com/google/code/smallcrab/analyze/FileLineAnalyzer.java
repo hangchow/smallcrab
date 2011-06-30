@@ -9,7 +9,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -114,13 +118,14 @@ public class FileLineAnalyzer implements FileAnalyzer {
 		void consume(String[] linePackage);
 	}
 
+	@Override
 	public void analyzeAppend(final File file, final Map<String, Set<String>> result, final AnalyzeCallback callback) throws IOException {
 		this.analyze(file, new LineConsumer() {
 
 			@Override
 			public void consume(String[] lineResult) {
 				if (ArrayKit.isNotEmpty(lineResult)) {
-					String key = lineResult[0];
+					String key = lineResult[0];// TODO
 					String value = lineResult[1];
 					Set<String> originValue = result.get(key);
 					if (originValue == null) {
@@ -131,6 +136,51 @@ public class FileLineAnalyzer implements FileAnalyzer {
 				}
 
 			}
+		}, callback);
+	}
+
+	@Override
+	public void analyzeXYSplots(final File file, final List<List<Double>> result, final Map<Double, Integer> xCount, final AnalyzeCallback callback) throws IOException {
+		this.analyze(file, new LineConsumer() {
+
+			private SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-m-dd hh:mm:ss");
+
+			/*
+			 * @lineResult [X,Y1,Y2...]
+			 * 
+			 * @see com.google.code.smallcrab.analyze.FileLineAnalyzer.LineConsumer#consume(java.lang.String[])
+			 */
+			@Override
+			public void consume(String[] lineResult) {
+				if (ArrayKit.isNotEmpty(lineResult) && lineResult.length >= 2) { // 2 indicate [X,Y1]
+					List<Double> xyaxis = new ArrayList<Double>(lineResult.length);
+					String x = lineResult[0];
+					double xaxis = 0;
+					try {
+						xaxis = dataFormat.parse(x).getTime();
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					xyaxis.add(xaxis);
+					callback.setxMinValue(xaxis);
+					callback.setxMaxValue(xaxis);
+					for (int i = 1; i < lineResult.length; i++) {
+						double y = Double.parseDouble(lineResult[i]);
+						xyaxis.add(y);
+						callback.setyMinValue(y);
+						callback.setyMaxValue(y);
+					}
+					// do x count
+					Integer count = xCount.get(xaxis);
+					if (count == null) {
+						count = 0;
+					}
+					count += lineResult.length - 1;
+					xCount.put(xaxis, count);
+					result.add(xyaxis);
+				}
+			}
+
 		}, callback);
 	}
 

@@ -8,7 +8,6 @@ import javax.swing.event.ChangeListener;
 
 import com.google.code.smallcrab.swing.apache.ApachePanel;
 import com.google.code.smallcrab.swing.csv.CsvPanel;
-import com.google.code.smallcrab.swing.iis.IisPanel;
 
 /**
  * @author seanlinwang at gmail dot com
@@ -20,14 +19,14 @@ public class ConfigTabbedPanel extends JTabbedPane {
 
 	public ConfigTabbedPanel(ChangeListener changeListener) {
 		super();
+		CsvPanel csvPanel = new CsvPanel();
+		add(csvPanel);
+		
 		ApachePanel apacheLogPanel = new ApachePanel();
 		add(apacheLogPanel);
 
-		IisPanel iisLogPanel = new IisPanel();
-		add(iisLogPanel);
-
-		CsvPanel csvPanel = new CsvPanel();
-		add(csvPanel);
+		//IisPanel iisLogPanel = new IisPanel();
+		//add(iisLogPanel);
 
 		setSelectedIndex(0);// set apache log panel as default
 		addChangeListener(changeListener);

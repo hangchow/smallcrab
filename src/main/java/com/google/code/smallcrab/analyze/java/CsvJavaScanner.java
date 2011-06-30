@@ -20,9 +20,7 @@ public class CsvJavaScanner implements LineScanner {
 	public String[] scan(String line) {
 		CsvPackage spliter = new CsvPackage();
 		spliter.split(line);
-		String uid = spliter.c(0);
-		String followingId = spliter.c(1);
-		return new String[] { uid, followingId };
+		return spliter.getColumns();
 	}
 
 }

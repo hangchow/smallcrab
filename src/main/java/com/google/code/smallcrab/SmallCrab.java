@@ -27,7 +27,7 @@ public class SmallCrab extends JPanel {
 	public SmallCrab() {
 		super(new BorderLayout());
 		OutputPanel leftPanel = new OutputPanel();
-		JPanel rightPanel = new ControlPanel(frame, leftPanel.getTaskOutput(), leftPanel);
+		JPanel rightPanel = new ControlPanel(frame, leftPanel.getTaskOutput(), leftPanel.getChartPanel(), leftPanel);
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
 		splitPane.setOneTouchExpandable(true);
@@ -50,11 +50,12 @@ public class SmallCrab extends JPanel {
 		frame = new JFrame("SmallCrab");
 		frame.setIconImage(CrabKit.createImage("logo/crab-icon-16.png"));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		
 		// Create and set up the content pane.
-		JComponent newContentPane = new SmallCrab();
-		newContentPane.setOpaque(true); // content panes must be opaque
-		frame.setContentPane(newContentPane);
+		JComponent contentPane = new SmallCrab();
+		contentPane.setOpaque(true); // content panes must be opaque
+		frame.setContentPane(contentPane);
 
 		// Display the window.
 		frame.pack();

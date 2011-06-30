@@ -6,7 +6,6 @@ import com.google.code.smallcrab.analyze.LineScanner;
 import com.google.code.smallcrab.matcher.LineMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheLogLineMatcher;
 import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
-import com.google.code.smallcrab.viewer.LineViewer;
 import com.google.code.smallcrab.viewer.apache.ApacheLogLineViewer;
 
 /**
@@ -63,7 +62,7 @@ public class ApacheCountScanner implements LineScanner {
 		}
 		String[] result = new String[lineViewers.size()];
 		int index = 0;
-		for (LineViewer<ApacheLogPackage> lineViewer : lineViewers) {
+		for (ApacheLogLineViewer lineViewer : lineViewers) {
 			result[index++] = lineViewer.view(spliter); // one spliter can be matched or viewed
 		}
 		return result;

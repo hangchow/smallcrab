@@ -1,14 +1,18 @@
 package com.google.code.smallcrab.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -104,9 +108,10 @@ public class ControlPanel extends JPanel implements ActionListener {
 							long p2 = totalLength * PROGRESS_BAR_MAX;
 							int progress = (int) (p1 == p2 ? PROGRESS_BAR_MAX : p1 / totalLength);
 							if (progress < 0 || progress > 100) {
-								throw new IllegalArgumentException("the progress value should be from 0 to 100:" + progress);
+								System.out.println("the progress value should be from 0 to 100:" + progress);
+							} else {
+								setProgress(progress);
 							}
-							setProgress(progress);
 						}
 
 						@Override
@@ -124,12 +129,21 @@ public class ControlPanel extends JPanel implements ActionListener {
 					if (selectedConfig.isAnalyzeCount()) {
 						final Map<String, Integer> result = new HashMap<String, Integer>(10240);
 						analyzer.analyzeCount(sourceFile, result, ac);
-						stopAnalyzeCount(analyzer, totalLength, result, ac);
+						outputResultHeader(analyzer, totalLength, ac);
+						outputResultCount(analyzer, totalLength, result, ac);
 					} else if (selectedConfig.isAnalyzeAppend()) {
 						final Map<String, Set<String>> result = new HashMap<String, Set<String>>(10240);
 						analyzer.analyzeAppend(sourceFile, result, ac);
-						stopAnalyzeAppend(analyzer, totalLength, result, ac);
+						outputResultHeader(analyzer, totalLength, ac);
+						outputResultAppend(analyzer, totalLength, result, ac);
+					} else if (selectedConfig.isAnalyzeXYSplots()) {
+						final List<List<Double>> xySpots = new ArrayList<List<Double>>(10240);
+						final Map<Double, Integer> xCount = new HashMap<Double, Integer>(10240);
+						analyzer.analyzeXYSplots(sourceFile, xySpots, xCount, ac);
+						outputResultHeader(analyzer, totalLength, ac);
+						outputResultXYSplots(analyzer, totalLength, xySpots, xCount, ac);
 					}
+					toolBarPanel.clickStopButton();
 					setTitle("Stop");
 				} catch (Throwable e) {
 					taskOutput.append(e.toString());
@@ -150,13 +164,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 			taskOutput.append("= Size:" + totalLength + "bytes\n");
 		}
 
-		private void stopAnalyzeCount(FileLineAnalyzer ala, final long totalLength, Map<String, Integer> map, final AnalyzeCallback ac) {
+		private void outputResultHeader(FileLineAnalyzer ala, final long totalLength, final AnalyzeCallback ac) {
 			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
 			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
 			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
 			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
 			taskOutput.append("===============================================\n");
-			Object[] resultArray = map.entrySet().toArray();
+		}
+
+		private void outputResultCount(FileLineAnalyzer ala, final long totalLength, Map<String, Integer> result, final AnalyzeCallback callback) {
+			Object[] resultArray = result.entrySet().toArray();
 			Arrays.sort(resultArray, new Comparator<Object>() {
 				@SuppressWarnings("unchecked")
 				@Override
@@ -166,23 +183,39 @@ public class ControlPanel extends JPanel implements ActionListener {
 			});
 			for (int i = 0; i < resultArray.length; i++) {
 				@SuppressWarnings("unchecked")
-				Entry<String, Integer> next = (Entry<String, Integer>)resultArray[i];
+				Entry<String, Integer> next = (Entry<String, Integer>) resultArray[i];
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
 			}
-			toolBarPanel.clickStopButton();
 		}
 
-		private void stopAnalyzeAppend(FileLineAnalyzer ala, final long totalLength, Map<String, Set<String>> map, final AnalyzeCallback ac) {
-			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
-			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
-			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
-			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
-			taskOutput.append("===============================================\n");
-			for (Iterator<Entry<String, Set<String>>> itt = map.entrySet().iterator(); itt.hasNext();) {
+		private void outputResultAppend(FileLineAnalyzer ala, final long totalLength, Map<String, Set<String>> result, final AnalyzeCallback callback) {
+			for (Iterator<Entry<String, Set<String>>> itt = result.entrySet().iterator(); itt.hasNext();) {
 				Entry<String, Set<String>> next = itt.next();
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
 			}
-			toolBarPanel.clickStopButton();
+		}
+
+		public void outputResultXYSplots(FileLineAnalyzer analyzer, long totalLength, List<List<Double>> result, Map<Double, Integer> xCount, AnalyzeCallback callback) {
+			taskOutput.append(String.format("x min value:%s\n", callback.getxMinValue()));
+			taskOutput.append(String.format("x max value:%s\n", callback.getxMaxValue()));
+			taskOutput.append(String.format("y min value:%s\n", callback.getyMinValue()));
+			taskOutput.append(String.format("y max value:%s\n", callback.getyMaxValue()));
+			chartPanel.setxMaxValue(callback.getxMaxValue());
+			chartPanel.setxMinValue(callback.getxMinValue());
+			chartPanel.setyMaxValue(callback.getyMaxValue());
+			chartPanel.setyMinValue(callback.getyMinValue());
+			for (Entry<Double, Integer> entry : xCount.entrySet()) {
+				int count = entry.getValue();
+				callback.setxMinCount(count);
+				callback.setxMaxCount(count);
+			}
+			taskOutput.append(String.format("min tps:%s\n", callback.getxMinCount()));
+			taskOutput.append(String.format("max tps:%s\n", callback.getxMaxCount()));
+			chartPanel.setxMinCount(callback.getxMinCount());
+			chartPanel.setxMaxCount(callback.getxMaxCount());
+			chartPanel.setResult(result);
+			chartPanel.setxCount(xCount);
+			chartPanel.repaint();
 		}
 
 		/**
@@ -222,8 +255,9 @@ public class ControlPanel extends JPanel implements ActionListener {
 	private ToolBarPanel toolBarPanel;
 	private ConfigTabbedPanel configPane;
 	private JFrame frame;
+	private ChartPanel chartPanel;
 
-	public ControlPanel(JFrame frame, JTextArea taskOutput, PropertyChangeListener taskListener) {
+	public ControlPanel(JFrame frame, JTextArea taskOutput, ChartPanel chartPanel, PropertyChangeListener taskListener) {
 		this.setLayout(new BorderLayout());
 
 		this.frame = frame;
@@ -234,6 +268,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		this.analyzeTask.execute();
 
 		this.taskOutput = taskOutput;
+		this.chartPanel = chartPanel;
 		this.toolBarPanel = new ToolBarPanel(this);
 		add(this.toolBarPanel, BorderLayout.NORTH);
 
@@ -242,6 +277,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 				// do nothing
 			}
 		});
+		this.configPane.setPreferredSize(new Dimension(450, 500));
 		add(configPane, BorderLayout.CENTER);
 	}
 
@@ -285,6 +321,14 @@ public class ControlPanel extends JPanel implements ActionListener {
 			File file = fileChooser.getSelectedFile();
 			this.sourceFile = file;
 			setTitle("Selected");
+			try {
+				this.getSelectedConfigPanel().notifyFileChange(this.sourceFile);
+				this.getSelectedConfigPanel().repaint();
+			} catch (IOException e) {
+				e.printStackTrace();
+				taskOutput.append("init config panel error\n");
+				return false;
+			}
 			return true;
 		} else {
 			taskOutput.append("open file error\n");

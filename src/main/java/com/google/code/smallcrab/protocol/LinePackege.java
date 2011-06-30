@@ -18,6 +18,6 @@ public interface LinePackege {
 	 * @param columnIndex
 	 * @return
 	 */
-	String c(int columnIndex);
+	String column(int columnIndex);
 
 }

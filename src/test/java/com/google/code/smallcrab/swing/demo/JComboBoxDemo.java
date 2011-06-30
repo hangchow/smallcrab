@@ -1,4 +1,4 @@
-package com.google.code.smallcrab.scan.apache;
+package com.google.code.smallcrab.swing.demo;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
@@ -11,6 +11,10 @@ import javax.swing.JPanel;
 
 public class JComboBoxDemo extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2290313658182614470L;
 	public JComboBoxDemo() {
 		String[] comboTypes = { "Numbers", "Alphabets", "Symbols" };
 		// Create the combo box, and set 2nd item as Default

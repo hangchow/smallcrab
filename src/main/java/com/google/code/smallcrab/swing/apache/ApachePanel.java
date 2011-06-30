@@ -17,11 +17,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.TableModel;
 
 import com.google.code.smallcrab.analyze.FileLineAnalyzer;
@@ -37,6 +40,7 @@ import com.google.code.smallcrab.matcher.apache.ApachePathMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheQueryMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheReferrerMatcher;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
+import com.google.code.smallcrab.swing.utils.ColumnResizer;
 import com.google.code.smallcrab.utils.StringKit;
 import com.google.code.smallcrab.viewer.apache.ApacheAgentViewer;
 import com.google.code.smallcrab.viewer.apache.ApacheAllViewer;
@@ -68,32 +72,34 @@ public class ApachePanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheL
 
 	public ApachePanel() {
 		super(new GridBagLayout());
-		setName("apache");
+		setName("apache/iis");
 
 		GridBagConstraints vlc = new GridBagConstraints();
 		vlc.fill = GridBagConstraints.VERTICAL;
 		vlc.gridx = 0;
 		vlc.gridy = 0;
-		add(new JLabel("view config"), vlc);
+		add(new JLabel("view config", SwingConstants.LEFT), vlc);
 
 		GridBagConstraints vc = new GridBagConstraints();
 		vc.fill = GridBagConstraints.VERTICAL;
 		vc.gridx = 0;
 		vc.gridy = 1;
 		this.apacheViewTable = new ApacheViewConfigTable();
+		ColumnResizer.setFixColumnWidth(this.apacheViewTable, 1, 200);
 		add(this.apacheViewTable, vc);
 
 		GridBagConstraints mlc = new GridBagConstraints();
 		mlc.fill = GridBagConstraints.VERTICAL;
 		mlc.gridx = 0;
 		mlc.gridy = 2;
-		add(new JLabel("match config"), mlc);
+		add(new JLabel("match config", SwingConstants.LEFT), mlc);
 
 		GridBagConstraints mc = new GridBagConstraints();
 		mc.fill = GridBagConstraints.VERTICAL;
 		mc.gridx = 0;
 		mc.gridy = 3;
 		this.apacheMatchTable = new ApacheMatchConfigTable();
+		ColumnResizer.setFixColumnWidth(this.apacheMatchTable, 1, 200);
 		add(this.apacheMatchTable, mc);
 
 		GridBagConstraints mcerror = new GridBagConstraints();
@@ -107,6 +113,11 @@ public class ApachePanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheL
 		this.resetConfigOutput();
 		add(this.apacheConfigOutput, mcerror);
 
+	}
+
+	@Override
+	protected void notifyFileChange(File logFile) throws IOException {
+		
 	}
 
 	public void resetConfigOutput() {
@@ -287,11 +298,6 @@ public class ApachePanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheL
 			}
 		}
 		return true;
-	}
-
-	@Override
-	public boolean isAnalyzeAppend() {
-		return false;
 	}
 
 	@Override
