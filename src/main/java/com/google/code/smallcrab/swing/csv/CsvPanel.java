@@ -4,7 +4,6 @@
 package com.google.code.smallcrab.swing.csv;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +13,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
@@ -24,7 +22,6 @@ import com.google.code.smallcrab.analyze.FileLineAnalyzer;
 import com.google.code.smallcrab.analyze.csv.CsvXYSplotsScanner;
 import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
-import com.google.code.smallcrab.swing.utils.ColumnResizer;
 import com.google.code.smallcrab.utils.StringKit;
 import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 
@@ -66,15 +63,21 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 
 	private void repaintConfigTable(String[] csvColumns) {
 		this.removeAll();
-		this.add(new JLabel("view config", SwingConstants.LEFT), BorderLayout.NORTH);
+		JLabel label = new JLabel("view config", SwingConstants.LEFT);
+		label.setVisible(true);
+		this.add(label, BorderLayout.NORTH);
 
 		this.csvViewConfigTable = new CsvViewConfigTable(csvColumns);
-		int tablePreferredWidth = ColumnResizer.getTablePreferredWidth(csvViewConfigTable);
-		this.csvViewConfigTable.setPreferredScrollableViewportSize(new Dimension(tablePreferredWidth + 30, 350));
-		ColumnResizer.setFixColumnWidth(this.csvViewConfigTable, 2, 35);
 		JScrollPane scrollPane = new JScrollPane(csvViewConfigTable);
+		scrollPane.setVisible(true);
 		this.add(scrollPane, BorderLayout.CENTER);
-		this.repaint();
+		
+		//this.repaint();
+		// int tablePreferredWidth = ColumnResizer.getTablePreferredWidth(csvViewConfigTable);
+		// this.csvViewConfigTable.setPreferredScrollableViewportSize(new Dimension(tablePreferredWidth + 30, 350));
+		// ColumnResizer.setFixColumnWidth(this.csvViewConfigTable, 2, 25);
+		// JScrollPane scrollPane = new JScrollPane(csvViewConfigTable);
+		// this.add(scrollPane, BorderLayout.CENTER);
 	}
 
 	/*

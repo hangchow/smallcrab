@@ -3,6 +3,8 @@
  */
 package com.google.code.smallcrab.swing.csv;
 
+import java.util.Arrays;
+
 import javax.swing.JComboBox;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -29,16 +31,17 @@ public class CsvViewTableModel extends AbstractTableModel implements TableModelL
 		this.data = new Object[csvColumns.length][3];
 		for (int i = 0; i < csvColumns.length; i++) {
 			this.data[i][0] = csvColumns[i];
-			this.data[i][1] = new JComboBox(axises) {
-
-				private static final long serialVersionUID = 2642878775147351872L;
-
-				@Override
-				public String toString() {
-					return axises[0];
-				}
-
-			};
+//			this.data[i][1] = new JComboBox(axises) {
+//
+//				private static final long serialVersionUID = 2642878775147351872L;
+//
+//				@Override
+//				public String toString() {
+//					return axises[0];
+//				}
+//
+//			};
+			this.data[i][1] = axises[0];
 			this.data[i][2] = false;
 		}
 	}
@@ -55,8 +58,7 @@ public class CsvViewTableModel extends AbstractTableModel implements TableModelL
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		Object valueAt = getValueAt(0, columnIndex);
-		return valueAt == null ? null : valueAt.getClass();
+		return getValueAt(0, columnIndex).getClass();
 	}
 
 	/*
