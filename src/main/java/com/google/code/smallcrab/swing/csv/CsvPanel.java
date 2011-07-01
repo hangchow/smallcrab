@@ -71,8 +71,8 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 		JScrollPane scrollPane = new JScrollPane(csvViewConfigTable);
 		scrollPane.setVisible(true);
 		this.add(scrollPane, BorderLayout.CENTER);
-		
-		//this.repaint();
+
+		// this.repaint();
 		// int tablePreferredWidth = ColumnResizer.getTablePreferredWidth(csvViewConfigTable);
 		// this.csvViewConfigTable.setPreferredScrollableViewportSize(new Dimension(tablePreferredWidth + 30, 350));
 		// ColumnResizer.setFixColumnWidth(this.csvViewConfigTable, 2, 25);
@@ -148,20 +148,25 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public boolean isPrepared() {
-		// check if view is prepared
 		TableModel viewModel = this.csvViewConfigTable.getModel();
-		int checkedNum = 0;
+		int xAxisCount = 0;
+		int yAxisCount = 0;
 		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
-			// String option = (String) viewModel.getValueAt(rowIndex, 0);
-			// String value = (String) viewModel.getValueAt(rowIndex, 1);
-			boolean checked = (Boolean) viewModel.getValueAt(rowIndex, 2);
-			if (checked)
-				checkedNum++;
+			boolean used = (Boolean) viewModel.getValueAt(rowIndex, 2);
+			if (used) {
+				String axisSelect = (String) viewModel.getValueAt(rowIndex, 1);
+				if (axisSelect.equals(CsvViewTableModel.axises[1])) { // x axis
+					xAxisCount++;
+				} else if (axisSelect.equals(CsvViewTableModel.axises[2])) {// y axis
+					yAxisCount++;
+				}
+			}
 		}
-		if (checkedNum == 0) {
+		if (xAxisCount == 1 && yAxisCount >= 1) {
+			return true;
+		} else {
 			return false;
 		}
-		return true;
 	}
 
 	@Override

@@ -209,8 +209,8 @@ public class ControlPanel extends JPanel implements ActionListener {
 				callback.setxMinCount(count);
 				callback.setxMaxCount(count);
 			}
-			taskOutput.append(String.format("min tps:%s\n", callback.getxMinCount()));
-			taskOutput.append(String.format("max tps:%s\n", callback.getxMaxCount()));
+			taskOutput.append(String.format("min frequency:%s\n", callback.getxMinCount()));
+			taskOutput.append(String.format("max frequency:%s\n", callback.getxMaxCount()));
 			chartPanel.setxMinCount(callback.getxMinCount());
 			chartPanel.setxMaxCount(callback.getxMaxCount());
 			chartPanel.setResult(result);
