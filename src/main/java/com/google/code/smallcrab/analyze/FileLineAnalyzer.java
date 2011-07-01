@@ -143,7 +143,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	public void analyzeXYSplots(final File file, final List<List<Double>> result, final Map<Double, Integer> xCount, final AnalyzeCallback callback) throws IOException {
 		this.analyze(file, new LineConsumer() {
 
-			private SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-m-dd hh:mm:ss");
+			private SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 
 			/*
 			 * @lineResult [X,Y1,Y2...]
