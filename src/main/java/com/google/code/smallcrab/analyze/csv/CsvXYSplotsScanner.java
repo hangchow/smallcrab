@@ -46,9 +46,12 @@ public class CsvXYSplotsScanner implements LineScanner {
 				this.yAxislineViewers.add(lineViewer);
 			}
 		}
+<<<<<<< HEAD
 		if (this.xAxisLineViewr == null || this.yAxislineViewers.size() == 0) {
 			throw new IllegalArgumentException("unsupport viewers");
 		}
+=======
+>>>>>>> csvsupport
 	}
 
 	/*
