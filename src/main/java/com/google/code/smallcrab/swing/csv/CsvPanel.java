@@ -71,13 +71,8 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 		JScrollPane scrollPane = new JScrollPane(csvViewConfigTable);
 		scrollPane.setVisible(true);
 		this.add(scrollPane, BorderLayout.CENTER);
-<<<<<<< HEAD
-		
-		//this.repaint();
-=======
 
 		// this.repaint();
->>>>>>> csvsupport
 		// int tablePreferredWidth = ColumnResizer.getTablePreferredWidth(csvViewConfigTable);
 		// this.csvViewConfigTable.setPreferredScrollableViewportSize(new Dimension(tablePreferredWidth + 30, 350));
 		// ColumnResizer.setFixColumnWidth(this.csvViewConfigTable, 2, 25);
@@ -153,22 +148,6 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public boolean isPrepared() {
-<<<<<<< HEAD
-		// check if view is prepared
-		TableModel viewModel = this.csvViewConfigTable.getModel();
-		int checkedNum = 0;
-		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
-			// String option = (String) viewModel.getValueAt(rowIndex, 0);
-			// String value = (String) viewModel.getValueAt(rowIndex, 1);
-			boolean checked = (Boolean) viewModel.getValueAt(rowIndex, 2);
-			if (checked)
-				checkedNum++;
-		}
-		if (checkedNum == 0) {
-			return false;
-		}
-		return true;
-=======
 		TableModel viewModel = this.csvViewConfigTable.getModel();
 		int xAxisCount = 0;
 		int yAxisCount = 0;
@@ -188,7 +167,6 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 		} else {
 			return false;
 		}
->>>>>>> csvsupport
 	}
 
 	@Override
