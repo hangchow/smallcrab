@@ -4,6 +4,7 @@
 package com.google.code.smallcrab.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -28,6 +29,8 @@ public class OutputPanel extends JPanel implements PropertyChangeListener {
 
 	private JTextArea taskOutput;
 
+	private ChartPanel chartPanel;
+
 	public JTextArea getTaskOutput() {
 		return taskOutput;
 	}
@@ -40,7 +43,6 @@ public class OutputPanel extends JPanel implements PropertyChangeListener {
 		progressBar.setStringPainted(true);
 
 		JPanel panel = new JPanel(new BorderLayout());
-		//panel.setSize(20, 250);
 		panel.add(progressBar);
 		add(panel, BorderLayout.NORTH);
 
@@ -48,15 +50,16 @@ public class OutputPanel extends JPanel implements PropertyChangeListener {
 		taskOutput.setMargin(new Insets(0, 0, 0, 0));
 		taskOutput.setEditable(false);
 		add(new JScrollPane(taskOutput), BorderLayout.CENTER);
-		//setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+		chartPanel = new ChartPanel();
+		add(new JScrollPane(chartPanel), BorderLayout.SOUTH);
 
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.
-	 * PropertyChangeEvent)
+	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans. PropertyChangeEvent)
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -64,6 +67,10 @@ public class OutputPanel extends JPanel implements PropertyChangeListener {
 			int progress = (Integer) evt.getNewValue();
 			progressBar.setValue(progress);
 		}
+	}
+
+	public ChartPanel getChartPanel() {
+		return chartPanel;
 	}
 
 }

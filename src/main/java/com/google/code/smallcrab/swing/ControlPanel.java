@@ -1,21 +1,27 @@
 package com.google.code.smallcrab.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
@@ -31,6 +37,9 @@ import com.google.code.smallcrab.analyze.FileLineAnalyzer;
  * @date Dec 28, 2010
  */
 public class ControlPanel extends JPanel implements ActionListener {
+	private void println(String msg) {
+		System.err.println(Thread.currentThread().getName() + " -- " + msg);
+	}
 
 	/**
 	 * Analyze task.
@@ -80,14 +89,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 		public Void doInBackground() {
 			while (true) {
 				try {
+					println("sleepping");
 					sleep();
+					setTitle("Analyzing");
 					final long totalLength = sourceFile.length();
-					this.analyzer = analyzeConfigPanel.createFileLineAnalyzer();
+					AnalyzeConfigPanel<?, ?> selectedConfig = getSelectedConfigPanel();
+					this.analyzer = selectedConfig.createFileLineAnalyzer();
 					setProgress(0);
 					outputClear();
 					outputAnalyzeStart(totalLength);
 
-					final Map<String, Integer> result = new HashMap<String, Integer>(512);
 					final AnalyzeCallback ac = new AnalyzeCallback() {
 						private long bufferLineSize = setBufferLineSize();
 
@@ -97,9 +108,10 @@ public class ControlPanel extends JPanel implements ActionListener {
 							long p2 = totalLength * PROGRESS_BAR_MAX;
 							int progress = (int) (p1 == p2 ? PROGRESS_BAR_MAX : p1 / totalLength);
 							if (progress < 0 || progress > 100) {
-								throw new IllegalArgumentException("the progress value should be from 0 to 100:" + progress);
+								System.out.println("the progress value should be from 0 to 100:" + progress);
+							} else {
+								setProgress(progress);
 							}
-							setProgress(progress);
 						}
 
 						@Override
@@ -114,8 +126,25 @@ public class ControlPanel extends JPanel implements ActionListener {
 						}
 					};
 
-					analyzer.analyze(sourceFile, result, ac);
-					stopAnalyze(analyzer, totalLength, result, ac);
+					if (selectedConfig.isAnalyzeCount()) {
+						final Map<String, Integer> result = new HashMap<String, Integer>(10240);
+						analyzer.analyzeCount(sourceFile, result, ac);
+						outputResultHeader(analyzer, totalLength, ac);
+						outputResultCount(analyzer, totalLength, result, ac);
+					} else if (selectedConfig.isAnalyzeAppend()) {
+						final Map<String, Set<String>> result = new HashMap<String, Set<String>>(10240);
+						analyzer.analyzeAppend(sourceFile, result, ac);
+						outputResultHeader(analyzer, totalLength, ac);
+						outputResultAppend(analyzer, totalLength, result, ac);
+					} else if (selectedConfig.isAnalyzeXYSplots()) {
+						final List<List<Double>> xySpots = new ArrayList<List<Double>>(10240);
+						final Map<Double, Integer> xCount = new HashMap<Double, Integer>(10240);
+						analyzer.analyzeXYSplots(sourceFile, xySpots, xCount, ac);
+						outputResultHeader(analyzer, totalLength, ac);
+						outputResultXYSplots(analyzer, totalLength, xySpots, xCount, ac);
+					}
+					toolBarPanel.clickStopButton();
+					setTitle("Stop");
 				} catch (Throwable e) {
 					taskOutput.append(e.toString());
 					e.printStackTrace();
@@ -132,15 +161,18 @@ public class ControlPanel extends JPanel implements ActionListener {
 
 		private void outputAnalyzeStart(final long totalLength) {
 			taskOutput.append("===============================================\n");
-			taskOutput.append("= Size:" + totalLength + "\n");
+			taskOutput.append("= Size:" + totalLength + "bytes\n");
 		}
 
-		private void stopAnalyze(FileLineAnalyzer ala, final long totalLength, final Map<String, Integer> result, final AnalyzeCallback ac) {
+		private void outputResultHeader(FileLineAnalyzer ala, final long totalLength, final AnalyzeCallback ac) {
 			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
 			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
 			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
 			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
 			taskOutput.append("===============================================\n");
+		}
+
+		private void outputResultCount(FileLineAnalyzer ala, final long totalLength, Map<String, Integer> result, final AnalyzeCallback callback) {
 			Object[] resultArray = result.entrySet().toArray();
 			Arrays.sort(resultArray, new Comparator<Object>() {
 				@SuppressWarnings("unchecked")
@@ -154,7 +186,36 @@ public class ControlPanel extends JPanel implements ActionListener {
 				Entry<String, Integer> next = (Entry<String, Integer>) resultArray[i];
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
 			}
-			toolBarPanel.clickStopButton();
+		}
+
+		private void outputResultAppend(FileLineAnalyzer ala, final long totalLength, Map<String, Set<String>> result, final AnalyzeCallback callback) {
+			for (Iterator<Entry<String, Set<String>>> itt = result.entrySet().iterator(); itt.hasNext();) {
+				Entry<String, Set<String>> next = itt.next();
+				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
+			}
+		}
+
+		public void outputResultXYSplots(FileLineAnalyzer analyzer, long totalLength, List<List<Double>> result, Map<Double, Integer> xCount, AnalyzeCallback callback) {
+			taskOutput.append(String.format("x min value:%s\n", callback.getxMinValue()));
+			taskOutput.append(String.format("x max value:%s\n", callback.getxMaxValue()));
+			taskOutput.append(String.format("y min value:%s\n", callback.getyMinValue()));
+			taskOutput.append(String.format("y max value:%s\n", callback.getyMaxValue()));
+			chartPanel.setxMaxValue(callback.getxMaxValue());
+			chartPanel.setxMinValue(callback.getxMinValue());
+			chartPanel.setyMaxValue(callback.getyMaxValue());
+			chartPanel.setyMinValue(callback.getyMinValue());
+			for (Entry<Double, Integer> entry : xCount.entrySet()) {
+				int count = entry.getValue();
+				callback.setxMinCount(count);
+				callback.setxMaxCount(count);
+			}
+			taskOutput.append(String.format("min frequency:%s\n", callback.getxMinCount()));
+			taskOutput.append(String.format("max frequency:%s\n", callback.getxMaxCount()));
+			chartPanel.setxMinCount(callback.getxMinCount());
+			chartPanel.setxMaxCount(callback.getxMaxCount());
+			chartPanel.setResult(result);
+			chartPanel.setxCount(xCount);
+			chartPanel.repaint();
 		}
 
 		/**
@@ -175,7 +236,9 @@ public class ControlPanel extends JPanel implements ActionListener {
 		 * 
 		 */
 		public void stop() {
-			this.analyzer.finish();
+			if (null != this.analyzer) {
+				this.analyzer.finish();
+			}
 		}
 	}
 
@@ -190,12 +253,14 @@ public class ControlPanel extends JPanel implements ActionListener {
 	private PropertyChangeListener taskListener;
 	private JFileChooser fileChooser;
 	private ToolBarPanel toolBarPanel;
-	private AnalyzeConfigPanel<?, ?> analyzeConfigPanel;
 	private ConfigTabbedPanel configPane;
+	private JFrame frame;
+	private ChartPanel chartPanel;
 
-	public ControlPanel(JTextArea taskOutput, PropertyChangeListener taskListener) {
+	public ControlPanel(JFrame frame, JTextArea taskOutput, ChartPanel chartPanel, PropertyChangeListener taskListener) {
 		this.setLayout(new BorderLayout());
 
+		this.frame = frame;
 		this.taskListener = taskListener;
 		this.fileChooser = new JFileChooser();
 		this.analyzeTask = new AnalyzeTask();
@@ -203,31 +268,34 @@ public class ControlPanel extends JPanel implements ActionListener {
 		this.analyzeTask.execute();
 
 		this.taskOutput = taskOutput;
+		this.chartPanel = chartPanel;
 		this.toolBarPanel = new ToolBarPanel(this);
 		add(this.toolBarPanel, BorderLayout.NORTH);
 
 		this.configPane = new ConfigTabbedPanel(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
-				JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
-				analyzeConfigPanel = (AnalyzeConfigPanel<?, ?>) sourceTabbedPane.getSelectedComponent();
+				// do nothing
 			}
 		});
-		this.analyzeConfigPanel = (AnalyzeConfigPanel<?, ?>) this.configPane.getSelectedComponent();
-
+		this.configPane.setPreferredSize(new Dimension(450, 500));
 		add(configPane, BorderLayout.CENTER);
+	}
+
+	private AnalyzeConfigPanel<?, ?> getSelectedConfigPanel() {
+		return (AnalyzeConfigPanel<?, ?>) this.configPane.getSelectedComponent();
 	}
 
 	public void actionPerformed(ActionEvent ae) {
 		if (ToolBarPanel.CMD_START.equals(ae.getActionCommand())) {
 			try {
-				this.analyzeConfigPanel.resetConfigOutput();
-				if (this.analyzeConfigPanel.isPrepared()) {
+				getSelectedConfigPanel().resetConfigOutput();
+				if (getSelectedConfigPanel().isPrepared()) {
 					wakeupAnalyzing();
+					if (isAnalyzingPaused()) {
+						unpauseAnalyzing();
+					}
+					this.toolBarPanel.clickStartButton();
 				}
-				if (isAnalyzingPaused()) {
-					unpauseAnalyzing();
-				}
-				this.toolBarPanel.clickStartButton();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -241,10 +309,35 @@ public class ControlPanel extends JPanel implements ActionListener {
 			pauseAnalyzing();
 			this.toolBarPanel.clickPauseButton();
 		} else if (ToolBarPanel.CMD_SOURCE_CHOOSE == ae.getActionCommand()) {
-			choseFile();
-			this.toolBarPanel.clickStopButton();
+			if (choseFile()) {
+				this.toolBarPanel.clickStopButton();
+			}
 		}
+	}
 
+	private boolean choseFile() {
+		int returnVal = fileChooser.showOpenDialog(ControlPanel.this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			this.sourceFile = file;
+			setTitle("Selected");
+			try {
+				this.getSelectedConfigPanel().notifyFileChange(this.sourceFile);
+				this.getSelectedConfigPanel().repaint();
+			} catch (IOException e) {
+				e.printStackTrace();
+				taskOutput.append("init config panel error\n");
+				return false;
+			}
+			return true;
+		} else {
+			taskOutput.append("open file error\n");
+			return false;
+		}
+	}
+
+	private void setTitle(String title) {
+		this.frame.setTitle(title + " - " + this.sourceFile.getAbsolutePath() + " - smallcrab");
 	}
 
 	/**
@@ -265,6 +358,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 	 */
 	private void pauseAnalyzing() {
 		analyzeTask.pause();
+		setTitle("Paused");
 	}
 
 	private void unpauseAnalyzing() {
@@ -276,16 +370,6 @@ public class ControlPanel extends JPanel implements ActionListener {
 	 */
 	private void stopAnalyzing() {
 		analyzeTask.stop();
-	}
-
-	private void choseFile() {
-		int returnVal = fileChooser.showOpenDialog(ControlPanel.this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile();
-			this.sourceFile = file;
-		} else {
-			taskOutput.append("open file error\n");
-		}
 	}
 
 }

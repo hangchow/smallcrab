@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.apache;
 
-import com.google.code.smallcrab.spliter.apache.ApacheLogSpliter;
+import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
 
 /**
  * @author xalinx at gmail dot com
@@ -31,7 +31,7 @@ public class ApacheDomainViewer extends AbstractContainApacheViewer {
 	 * @see com.google.code.smallcrab.scan.apache.AbstractContainApacheViewer#getAllView(com.google.code.smallcrab.scan.apache.ApacheSpliter)
 	 */
 	@Override
-	protected String getAllView(ApacheLogSpliter spliter) {
+	protected String getAllView(ApacheLogPackage spliter) {
 		return spliter.getDomain();
 	}
 

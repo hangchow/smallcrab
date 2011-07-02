@@ -6,9 +6,8 @@ package com.google.code.smallcrab.swing;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeListener;
 
-import com.google.code.smallcrab.swing.apache.ApacheLogPanel;
-import com.google.code.smallcrab.swing.iis.CsvPanel;
-import com.google.code.smallcrab.swing.iis.IisLogPanel;
+import com.google.code.smallcrab.swing.apache.ApachePanel;
+import com.google.code.smallcrab.swing.csv.CsvPanel;
 
 /**
  * @author seanlinwang at gmail dot com
@@ -20,14 +19,14 @@ public class ConfigTabbedPanel extends JTabbedPane {
 
 	public ConfigTabbedPanel(ChangeListener changeListener) {
 		super();
-		ApacheLogPanel apacheLogPanel = new ApacheLogPanel();
-		add(apacheLogPanel);
-
-		IisLogPanel iisLogPanel = new IisLogPanel();
-		add(iisLogPanel);
-
 		CsvPanel csvPanel = new CsvPanel();
 		add(csvPanel);
+		
+		ApachePanel apacheLogPanel = new ApachePanel();
+		add(apacheLogPanel);
+
+		//IisPanel iisLogPanel = new IisPanel();
+		//add(iisLogPanel);
 
 		setSelectedIndex(0);// set apache log panel as default
 		addChangeListener(changeListener);

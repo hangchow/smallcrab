@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.matcher.apache;
 
-import com.google.code.smallcrab.spliter.apache.ApacheLogSpliter;
+import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
 import com.google.code.smallcrab.utils.UrlKit;
 
 /**
@@ -45,7 +45,7 @@ public class ApacheQueryMatcher extends ApacheLogLineMatcher {
 	 * 
 	 * @see com.google.code.smallcrab.scan.LineMatcher#match(java.lang.String, com.google.code.smallcrab.scan.LineSpliter)
 	 */
-	public boolean match(ApacheLogSpliter spliter) {
+	public boolean match(ApacheLogPackage spliter) {
 		String query = spliter.getQuery();
 		String pv = UrlKit.extractParameterValue(query, key);
 		return value.equals(pv);

@@ -3,7 +3,7 @@
  */
 package com.google.code.smallcrab.viewer.apache;
 
-import com.google.code.smallcrab.spliter.apache.ApacheLogSpliter;
+import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
 import com.google.code.smallcrab.utils.StringKit;
 import com.google.code.smallcrab.utils.UrlKit;
 
@@ -38,7 +38,7 @@ public class ApacheQueryViewer extends ApacheLogLineViewer {
 	 * @see com.google.code.smallcrab.scan.apache.AbstractContainApacheViewer#getAllView(com.google.code.smallcrab.scan.apache.ApacheSpliter)
 	 */
 	@Override
-	public String view(ApacheLogSpliter spliter) {
+	public String view(ApacheLogPackage spliter) {
 		String query = spliter.getQuery();
 		String v = query;
 		if (!emptyKey) {
