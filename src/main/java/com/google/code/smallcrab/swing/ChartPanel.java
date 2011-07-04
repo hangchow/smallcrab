@@ -52,9 +52,9 @@ public class ChartPanel extends JPanel {
 		this.yMinValue = yMinValue;
 	}
 
-	private int xMinCount = 0;
+	private double xMinCount = 0;
 
-	private int xMaxCount = 0;
+	private double xMaxCount = 0;
 
 	public void setxMinCount(int xMinCount) {
 		this.xMinCount = xMinCount;
@@ -140,18 +140,23 @@ public class ChartPanel extends JPanel {
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.xMaxCount / 4 * 3);
+		yLabel = String.valueOf((this.xMaxCount - this.xMinCount) / 4 * 3 + this.xMinCount);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength / 4 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.xMaxCount / 2);
+		yLabel = String.valueOf((this.xMaxCount - this.xMinCount) / 2 + this.xMinCount);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength / 2 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.xMaxCount / 4);
+		yLabel = String.valueOf( (this.xMaxCount - this.xMinCount) / 4 + this.xMinCount);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength / 4 * 3 - metrics.stringWidth(yLabel) / 2);
+		transform.rotate(Math.PI / 2);
+		g2d.setTransform(transform);
+		g.drawString(yLabel, 0, 0);
+		yLabel = String.valueOf(this.xMinCount);
+		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
@@ -162,18 +167,23 @@ public class ChartPanel extends JPanel {
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.yMaxValue / 4 * 3);
+		yLabel = String.valueOf((this.yMaxValue - this.yMinValue) / 4 * 3 + this.yMinValue);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength / 4 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.yMaxValue / 2);
+		yLabel = String.valueOf((this.yMaxValue - this.yMinValue) / 2 + this.yMinValue);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength / 2 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.yMaxValue / 4);
+		yLabel = String.valueOf((this.yMaxValue - this.yMinValue) / 4 + this.yMinValue);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength / 4 * 3 - metrics.stringWidth(yLabel) / 2);
+		transform.rotate(Math.PI / 2);
+		g2d.setTransform(transform);
+		g.drawString(yLabel, 0, 0);
+		yLabel = String.valueOf(this.yMinValue);
+		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
@@ -201,10 +211,10 @@ public class ChartPanel extends JPanel {
 		for (Object entry : countArray) {
 			@SuppressWarnings("unchecked")
 			double x = ((Entry<Double, Integer>) entry).getKey();
-			int pointX = (int) (1.0 * (x - xMinValue) / (xMaxValue - xMinValue) * xAxisLength);
+			int pointX = (int) ((x - xMinValue) / (xMaxValue - xMinValue) * xAxisLength);
 			@SuppressWarnings("unchecked")
 			int y = ((Entry<Double, Integer>) entry).getValue();
-			int pointY = -(int) (1.0 * (y - xMinCount) / (xMaxCount - xMinCount) * yAxisLength);
+			int pointY = -(int) ((y - xMinCount) / (xMaxCount - xMinCount) * yAxisLength);
 			int[] pointXs = new int[] { pointX, pointX + 1, pointX, pointX - 1 };
 			int[] pointYs = new int[] { pointY + 1, pointY, pointY - 1, pointY };
 			g2d.setColor(Color.blue);
@@ -242,6 +252,7 @@ public class ChartPanel extends JPanel {
 				int[] pointXs = new int[] { pointX, pointX + 1, pointX, pointX - 1 };
 				int[] pointYs = new int[] { pointY + 1, pointY, pointY - 1, pointY };
 				g2d.drawPolygon(pointXs, pointYs, 4);
+				g2d.fillPolygon(pointXs, pointYs, 4);
 			}
 		}
 	}
