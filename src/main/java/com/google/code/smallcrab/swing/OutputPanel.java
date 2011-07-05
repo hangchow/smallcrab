@@ -4,7 +4,6 @@
 package com.google.code.smallcrab.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

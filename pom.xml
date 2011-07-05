@@ -5,7 +5,11 @@
 	<groupId>com.google.code</groupId>
 	<modelVersion>4.0.0</modelVersion>
 	<name>smallcrab</name>
-	<version>latest</version>
+	<version>0.1-r${maven.build.timestamp}</version>
+	<properties>
+		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+		<build.version>${project.version}-r${maven.build.timestamp}</build.version>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
