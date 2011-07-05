@@ -208,6 +208,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 			taskOutput.append(String.format("x max value:%s\n", dateFormat.format(cal.getTime())));
 			taskOutput.append(String.format("y min value:%s\n", callback.getyMinValue()));
 			taskOutput.append(String.format("y max value:%s\n", callback.getyMaxValue()));
+			taskOutput.append(String.format("y average value:%s\n", callback.getyValueAverage()));
 			chartPanel.setxMaxValue(callback.getxMaxValue());
 			chartPanel.setxMinValue(callback.getxMinValue());
 			chartPanel.setyMaxValue(callback.getyMaxValue());

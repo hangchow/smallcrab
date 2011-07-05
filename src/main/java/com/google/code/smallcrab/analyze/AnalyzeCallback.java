@@ -50,6 +50,22 @@ public abstract class AnalyzeCallback {
 
 	private double yMaxValue = Double.MIN_VALUE;
 
+	private double yValueSum;
+
+	public double getYValueSum() {
+		return this.yValueSum;
+	}
+
+	private double yValueCount;
+
+	public double getyValueCount() {
+		return this.yValueCount;
+	}
+
+	public double getyValueAverage() {
+		return this.yValueSum / yValueCount;
+	}
+
 	private int xMinCount = Integer.MAX_VALUE;
 
 	private int xMaxCount = Integer.MIN_VALUE;
@@ -78,20 +94,8 @@ public abstract class AnalyzeCallback {
 		return yMinValue;
 	}
 
-	public void setyMinValue(double yMinValue) {
-		if (yMinValue < this.yMinValue) {
-			this.yMinValue = yMinValue;
-		}
-	}
-
 	public double getyMaxValue() {
 		return yMaxValue;
-	}
-
-	public void setyMaxValue(double yMaxValue) {
-		if (yMaxValue > this.yMaxValue) {
-			this.yMaxValue = yMaxValue;
-		}
 	}
 
 	public void setxMinCount(int count) {
@@ -112,5 +116,16 @@ public abstract class AnalyzeCallback {
 
 	public int getxMaxCount() {
 		return this.xMaxCount;
+	}
+
+	public void setyValue(double y) {
+		if (y < this.yMinValue) {
+			this.yMinValue = y;
+		}
+		if (y > this.yMaxValue) {
+			this.yMaxValue = y;
+		}
+		yValueSum += y;
+		yValueCount++;
 	}
 }

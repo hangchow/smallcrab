@@ -168,8 +168,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 					for (int i = 1; i < lineResult.length; i++) {
 						double y = Double.parseDouble(lineResult[i]);
 						xyaxis.add(y);
-						callback.setyMinValue(y);
-						callback.setyMaxValue(y);
+						callback.setyValue(y);
 					}
 					// do x count
 					Integer count = xCount.get(xaxis);
