@@ -7,8 +7,10 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +31,7 @@ import javax.swing.event.ChangeListener;
 
 import com.google.code.smallcrab.analyze.AnalyzeCallback;
 import com.google.code.smallcrab.analyze.FileLineAnalyzer;
+import com.google.code.smallcrab.protocol.Format;
 
 /**
  * Control panel with analyze task.
@@ -195,9 +198,14 @@ public class ControlPanel extends JPanel implements ActionListener {
 			}
 		}
 
+		private DateFormat dateFormat = Format.getDateFormat();
+		private Calendar cal = Format.getCalendar();
+
 		public void outputResultXYSplots(FileLineAnalyzer analyzer, long totalLength, List<List<Double>> result, Map<Double, Integer> xCount, AnalyzeCallback callback) {
-			taskOutput.append(String.format("x min value:%s\n", callback.getxMinValue()));
-			taskOutput.append(String.format("x max value:%s\n", callback.getxMaxValue()));
+			cal.setTimeInMillis((long) callback.getxMinValue());
+			taskOutput.append(String.format("x min value:%s\n", dateFormat.format(cal.getTime())));
+			cal.setTimeInMillis((long) callback.getxMaxValue());
+			taskOutput.append(String.format("x max value:%s\n", dateFormat.format(cal.getTime())));
 			taskOutput.append(String.format("y min value:%s\n", callback.getyMinValue()));
 			taskOutput.append(String.format("y max value:%s\n", callback.getyMaxValue()));
 			chartPanel.setxMaxValue(callback.getxMaxValue());

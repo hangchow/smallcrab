@@ -10,13 +10,17 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JPanel;
+
+import com.google.code.smallcrab.protocol.Format;
 
 public class ChartPanel extends JPanel {
 
@@ -64,7 +68,7 @@ public class ChartPanel extends JPanel {
 		this.xMaxCount = xMaxCount;
 	}
 
-	private Insets borderInsets = new Insets(40, 40, 40, 20);
+	private Insets borderInsets = new Insets(40, 40, 40, 40);
 
 	public void paintPoint(int x, int y) {
 
@@ -92,6 +96,9 @@ public class ChartPanel extends JPanel {
 		}
 	}
 
+	private DateFormat dateFormat = Format.getDateFormat();
+	private Calendar cal = Format.getCalendar();
+
 	private void drawAxis(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
@@ -115,7 +122,14 @@ public class ChartPanel extends JPanel {
 		g.drawLine(borderInsets.left + 5, borderInsets.top + yLength / 4 * 3, borderInsets.left - 5, borderInsets.top + yLength / 4 * 3);
 		g.drawLine(borderInsets.left, yEnd, borderInsets.left - 5, yEnd);
 		// draw x mark
-		g.drawLine(xEnd, yEnd - 5, xEnd, yEnd + 5);
+		g.drawLine(xEnd, yEnd, xEnd, yEnd + 5);
+		g.drawLine(borderInsets.left + xLength / 8 * 7, yEnd, borderInsets.left + xLength / 8 * 7, yEnd + 5);
+		g.drawLine(borderInsets.left + xLength / 4 * 3, yEnd, borderInsets.left + xLength / 4 * 3, yEnd + 5);
+		g.drawLine(borderInsets.left + xLength / 8 * 5, yEnd, borderInsets.left + xLength / 8 * 5, yEnd + 5);
+		g.drawLine(borderInsets.left + xLength / 2, yEnd, borderInsets.left + xLength / 2, yEnd + 5);
+		g.drawLine(borderInsets.left + xLength / 8 * 3, yEnd, borderInsets.left + xLength / 8 * 3, yEnd + 5);
+		g.drawLine(borderInsets.left + xLength / 4, yEnd, borderInsets.left + xLength / 4, yEnd + 5);
+		g.drawLine(borderInsets.left + xLength / 8 * 1, yEnd, borderInsets.left + xLength / 8 * 1, yEnd + 5);
 		g.drawLine(borderInsets.left, yEnd, borderInsets.left, yEnd + 5);
 		// draw axis label
 		g.setColor(Color.black);
@@ -150,7 +164,7 @@ public class ChartPanel extends JPanel {
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf( (this.xMaxCount - this.xMinCount) / 4 + this.xMinCount);
+		yLabel = String.valueOf((this.xMaxCount - this.xMinCount) / 4 + this.xMinCount);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength / 4 * 3 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
@@ -185,6 +199,34 @@ public class ChartPanel extends JPanel {
 		yLabel = String.valueOf(this.yMinValue);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
+		g2d.setTransform(transform);
+		g.drawString(yLabel, 0, 0);
+		// draw x mark label
+		g.setColor(Color.black);
+
+		cal.setTimeInMillis((long) this.xMaxValue);
+		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
+		transform.setToTranslation(borderInsets.left + xLength - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
+		g2d.setTransform(transform);
+		g.drawString(yLabel, 0, 0);
+		cal.setTimeInMillis((long) ((this.xMaxValue - this.xMinValue) / 4 * 3 + this.xMinValue));
+		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
+		transform.setToTranslation(borderInsets.left + xLength / 4 * 3 - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
+		g2d.setTransform(transform);
+		g.drawString(yLabel, 0, 0);
+		cal.setTimeInMillis((long) ((this.xMaxValue - this.xMinValue) / 2 + this.xMinValue));
+		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
+		transform.setToTranslation(borderInsets.left + xLength / 2 - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
+		g2d.setTransform(transform);
+		g.drawString(yLabel, 0, 0);
+		cal.setTimeInMillis((long) ((this.xMaxValue - this.xMinValue) / 4 + this.xMinValue));
+		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
+		transform.setToTranslation(borderInsets.left + xLength / 4 - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
+		g2d.setTransform(transform);
+		g.drawString(yLabel, 0, 0);
+		cal.setTimeInMillis((long) (this.xMinValue));
+		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
+		transform.setToTranslation(borderInsets.left - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
 	}

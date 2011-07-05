@@ -9,8 +9,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.google.code.smallcrab.protocol.Format;
 import com.google.code.smallcrab.utils.ArrayKit;
 
 /**
@@ -143,7 +144,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	public void analyzeXYSplots(final File file, final List<List<Double>> result, final Map<Double, Integer> xCount, final AnalyzeCallback callback) throws IOException {
 		this.analyze(file, new LineConsumer() {
 
-			private SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+			private DateFormat dateFormat = Format.getDateFormat();
 
 			/*
 			 * @lineResult [X,Y1,Y2...]
@@ -157,7 +158,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 					String x = lineResult[0];
 					double xaxis = 0;
 					try {
-						xaxis = dataFormat.parse(x).getTime();
+						xaxis = dateFormat.parse(x).getTime();
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
