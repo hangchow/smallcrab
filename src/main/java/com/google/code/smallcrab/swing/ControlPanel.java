@@ -203,25 +203,25 @@ public class ControlPanel extends JPanel implements ActionListener {
 
 		public void outputResultXYSplots(FileLineAnalyzer analyzer, long totalLength, List<List<Double>> result, Map<Double, Integer> xCount, AnalyzeCallback callback) {
 			cal.setTimeInMillis((long) callback.getxMinValue());
-			taskOutput.append(String.format("x min value:%s\n", dateFormat.format(cal.getTime())));
+			taskOutput.append(String.format("x min:%s\n", dateFormat.format(cal.getTime())));
 			cal.setTimeInMillis((long) callback.getxMaxValue());
-			taskOutput.append(String.format("x max value:%s\n", dateFormat.format(cal.getTime())));
-			taskOutput.append(String.format("y min value:%s\n", callback.getyMinValue()));
-			taskOutput.append(String.format("y max value:%s\n", callback.getyMaxValue()));
-			taskOutput.append(String.format("y average value:%s\n", callback.getyValueAverage()));
+			taskOutput.append(String.format("x max:%s\n", dateFormat.format(cal.getTime())));
+			taskOutput.append(String.format("y min:%s\n", callback.getyMinValue()));
+			taskOutput.append(String.format("y max:%s\n", callback.getyMaxValue()));
+			taskOutput.append(String.format("y average:%s\n", callback.getyValueAverage()));
 			chartPanel.setxMaxValue(callback.getxMaxValue());
 			chartPanel.setxMinValue(callback.getxMinValue());
 			chartPanel.setyMaxValue(callback.getyMaxValue());
 			chartPanel.setyMinValue(callback.getyMinValue());
 			for (Entry<Double, Integer> entry : xCount.entrySet()) {
 				int count = entry.getValue();
-				callback.setxMinCount(count);
-				callback.setxMaxCount(count);
+				callback.setFrequency(count);
 			}
-			taskOutput.append(String.format("min frequency:%s\n", callback.getxMinCount()));
-			taskOutput.append(String.format("max frequency:%s\n", callback.getxMaxCount()));
-			chartPanel.setxMinCount(callback.getxMinCount());
-			chartPanel.setxMaxCount(callback.getxMaxCount());
+			taskOutput.append(String.format("frequency min:%s\n", callback.getFrequencyMin()));
+			taskOutput.append(String.format("frequency max:%s\n", callback.getFrequencyMax()));
+			taskOutput.append(String.format("frequency average:%s\n", callback.getFrequencyAverage()));
+			chartPanel.setxMinCount(callback.getFrequencyMin());
+			chartPanel.setxMaxCount(callback.getFrequencyMax());
 			chartPanel.setResult(result);
 			chartPanel.setxCount(xCount);
 			chartPanel.repaint();

@@ -52,7 +52,7 @@ public abstract class AnalyzeCallback {
 
 	private double yValueSum;
 
-	public double getYValueSum() {
+	public double getyValueSum() {
 		return this.yValueSum;
 	}
 
@@ -63,12 +63,20 @@ public abstract class AnalyzeCallback {
 	}
 
 	public double getyValueAverage() {
-		return this.yValueSum / yValueCount;
+		return this.yValueSum / this.yValueCount;
+	}
+	
+	private double frequencySum;
+	
+	private double frequencyCount;
+	
+	public Object getFrequencyAverage() {
+		return this.frequencySum / this.frequencyCount;
 	}
 
-	private int xMinCount = Integer.MAX_VALUE;
+	private int frequencyMin = Integer.MAX_VALUE;
 
-	private int xMaxCount = Integer.MIN_VALUE;
+	private int frequencyMax = Integer.MIN_VALUE;
 
 	public double getxMinValue() {
 		return xMinValue;
@@ -98,34 +106,40 @@ public abstract class AnalyzeCallback {
 		return yMaxValue;
 	}
 
-	public void setxMinCount(int count) {
-		if (count < this.xMinCount) {
-			this.xMinCount = count;
-		}
+
+
+	public int getFrequencyMin() {
+		return this.frequencyMin;
 	}
 
-	public void setxMaxCount(int count) {
-		if (count > this.xMaxCount) {
-			this.xMaxCount = count;
-		}
-	}
-
-	public int getxMinCount() {
-		return this.xMinCount;
-	}
-
-	public int getxMaxCount() {
-		return this.xMaxCount;
+	public int getFrequencyMax() {
+		return this.frequencyMax;
 	}
 
 	public void setyValue(double y) {
 		if (y < this.yMinValue) {
 			this.yMinValue = y;
-		}
-		if (y > this.yMaxValue) {
+		} else if (y > this.yMaxValue) {
 			this.yMaxValue = y;
 		}
 		yValueSum += y;
-		yValueCount++;
+		yValueCount ++;
 	}
+
+	public void setFrequency(int freq) {
+		if(freq < this.frequencyMin) {
+			this.frequencyMin = freq;
+		} else if (freq > this.frequencyMax) {
+			this.frequencyMax = freq;
+		}
+		this.frequencySum += freq;
+		this.frequencyCount ++;
+	}
+
+	public void setxMaxCount(int count) {
+		if (count > this.frequencyMax) {
+			this.frequencyMax = count;
+		}
+	}
+	
 }
