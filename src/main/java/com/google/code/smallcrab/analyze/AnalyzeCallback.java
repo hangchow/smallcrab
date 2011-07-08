@@ -80,8 +80,6 @@ public abstract class AnalyzeCallback {
 		return this.frequencySum / this.frequencyCount;
 	}
 
-
-
 	public double getFrequencyMaxXValue() {
 		return frequencyMaxXValue;
 	}
