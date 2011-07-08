@@ -10,37 +10,9 @@ package com.google.code.smallcrab.analyze;
 public abstract class AnalyzeCallback {
 	private long analyzedSize;
 
-	public long getAnalyzedSize() {
-		return this.analyzedSize;
-	}
-
-	public void addAnalyzedSize(long size) {
-		this.analyzedSize += size;
-	}
-
-	public abstract void callback();
-
-	public abstract long getBufferLineSize();
-
 	private long totalLines;
 
-	public void setTotalLines(long line) {
-		this.totalLines = line;
-	}
-
-	public long getTotalLines() {
-		return this.totalLines;
-	}
-
 	private int invalidLines;
-
-	public int getInvalidLines() {
-		return invalidLines;
-	}
-
-	public void setInvalidLines(int invalidLines) {
-		this.invalidLines = invalidLines;
-	}
 
 	private double xMinValue = Double.MAX_VALUE;
 
@@ -49,97 +21,137 @@ public abstract class AnalyzeCallback {
 	private double yMinValue = Double.MAX_VALUE;
 
 	private double yMaxValue = Double.MIN_VALUE;
+	
+	private double yMaxXValue = Double.MIN_VALUE;
 
 	private double yValueSum;
 
-	public double getyValueSum() {
-		return this.yValueSum;
-	}
-
 	private double yValueCount;
-
-	public double getyValueCount() {
-		return this.yValueCount;
-	}
-
-	public double getyValueAverage() {
-		return this.yValueSum / this.yValueCount;
-	}
 	
 	private double frequencySum;
 	
 	private double frequencyCount;
 	
+	private int frequencyMinValue = Integer.MAX_VALUE;
+
+	private int frequencyMaxValue = Integer.MIN_VALUE;
+
+	private double frequencYMaxXValue;
+	
+	public long getAnalyzedSize() {
+		return this.analyzedSize;
+	}
+
+	public void addAnalyzedSize(long size) {
+		this.analyzedSize += size;
+	}
+	
+	public void setTotalLines(long line) {
+		this.totalLines = line;
+	}
+
+	public long getTotalLines() {
+		return this.totalLines;
+	}
+	
+	public int getInvalidLines() {
+		return invalidLines;
+	}
+
+	public void setInvalidLines(int invalidLines) {
+		this.invalidLines = invalidLines;
+	}
+
+	public double getYValueCount() {
+		return this.yValueCount;
+	}
+	
+	public double getYValueSum() {
+		return this.yValueSum;
+	}
+
+	public double getYValueAverage() {
+		return this.yValueSum / this.yValueCount;
+	}
+	
+
+	
 	public Object getFrequencyAverage() {
 		return this.frequencySum / this.frequencyCount;
 	}
 
-	private int frequencyMin = Integer.MAX_VALUE;
 
-	private int frequencyMax = Integer.MIN_VALUE;
 
-	public double getxMinValue() {
+	public double getFrequencYMaxXValue() {
+		return frequencYMaxXValue;
+	}
+
+	public double getXMinValue() {
 		return xMinValue;
 	}
 
-	public void setxMinValue(double xMinValue) {
-		if (xMinValue < this.xMinValue) {
-			this.xMinValue = xMinValue;
-		}
-	}
-
-	public double getxMaxValue() {
+	public double getXMaxValue() {
 		return xMaxValue;
 	}
 
-	public void setxMaxValue(double xMaxValue) {
-		if (xMaxValue > this.xMaxValue) {
-			this.xMaxValue = xMaxValue;
-		}
+	public double getYMinValue() {
+		return this.yMinValue;
 	}
 
-	public double getyMinValue() {
-		return yMinValue;
+	public double getYMaxValue() {
+		return this.yMaxValue;
 	}
 
-	public double getyMaxValue() {
-		return yMaxValue;
+	public double getYMaxXValue() {
+		return this.yMaxXValue;
 	}
 
 
-
-	public int getFrequencyMin() {
-		return this.frequencyMin;
+	public int getFrequencyMinValue() {
+		return this.frequencyMinValue;
 	}
 
-	public int getFrequencyMax() {
-		return this.frequencyMax;
+	public int getFrequencyMaxValue() {
+		return this.frequencyMaxValue;
 	}
 
-	public void setyValue(double y) {
+	public void setYValue(double y, double x) {
 		if (y < this.yMinValue) {
 			this.yMinValue = y;
 		} else if (y > this.yMaxValue) {
 			this.yMaxValue = y;
+			this.yMaxXValue = x;
 		}
 		yValueSum += y;
 		yValueCount ++;
 	}
+	
+	public void setXValue(double x) {
+		if (x < this.xMinValue) {
+			this.xMinValue = x;
+		} else if (x > this.xMaxValue) {
+			this.xMaxValue = x;
+		}
+	}
 
-	public void setFrequency(int freq) {
-		if(freq < this.frequencyMin) {
-			this.frequencyMin = freq;
-		} else if (freq > this.frequencyMax) {
-			this.frequencyMax = freq;
+	public void setFrequency(int freq, double x) {
+		if(freq < this.frequencyMinValue) {
+			this.frequencyMinValue = freq;
+		} else if (freq > this.frequencyMaxValue) {
+			this.frequencyMaxValue = freq;
+			this.frequencYMaxXValue = x;
 		}
 		this.frequencySum += freq;
 		this.frequencyCount ++;
 	}
 
-	public void setxMaxCount(int count) {
-		if (count > this.frequencyMax) {
-			this.frequencyMax = count;
+	public void setXMaxCount(int count) {
+		if (count > this.frequencyMaxValue) {
+			this.frequencyMaxValue = count;
 		}
 	}
 	
+	public abstract void callback();
+
+	public abstract long getBufferLineSize();
 }
