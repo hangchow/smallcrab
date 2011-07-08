@@ -106,6 +106,9 @@ public abstract class AnalyzeCallback {
 		return this.yMaxXValue;
 	}
 
+	public double getyMaxXValue() {
+		return this.yMaxXValue;
+	}
 
 	public int getFrequencyMinValue() {
 		return this.frequencyMinValue;
