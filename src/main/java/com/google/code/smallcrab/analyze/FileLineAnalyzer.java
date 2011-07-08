@@ -163,12 +163,11 @@ public class FileLineAnalyzer implements FileAnalyzer {
 						e.printStackTrace();
 					}
 					xyaxis.add(xaxis);
-					callback.setxMinValue(xaxis);
-					callback.setxMaxValue(xaxis);
+					callback.setxValue(xaxis);
 					for (int i = 1; i < lineResult.length; i++) {
 						double y = Double.parseDouble(lineResult[i]);
 						xyaxis.add(y);
-						callback.setyValue(y);
+						callback.setyValue(y, xaxis);
 					}
 					// do x count
 					Integer count = xCount.get(xaxis);

@@ -49,6 +49,8 @@ public abstract class AnalyzeCallback {
 	private double yMinValue = Double.MAX_VALUE;
 
 	private double yMaxValue = Double.MIN_VALUE;
+	
+	private double yMaxXValue = Double.MIN_VALUE;
 
 	private double yValueSum;
 
@@ -82,30 +84,21 @@ public abstract class AnalyzeCallback {
 		return xMinValue;
 	}
 
-	public void setxMinValue(double xMinValue) {
-		if (xMinValue < this.xMinValue) {
-			this.xMinValue = xMinValue;
-		}
-	}
-
 	public double getxMaxValue() {
 		return xMaxValue;
 	}
 
-	public void setxMaxValue(double xMaxValue) {
-		if (xMaxValue > this.xMaxValue) {
-			this.xMaxValue = xMaxValue;
-		}
-	}
-
 	public double getyMinValue() {
-		return yMinValue;
+		return this.yMinValue;
 	}
 
 	public double getyMaxValue() {
-		return yMaxValue;
+		return this.yMaxValue;
 	}
 
+	public double getyMaxXValue() {
+		return this.yMaxXValue;
+	}
 
 
 	public int getFrequencyMin() {
@@ -116,14 +109,23 @@ public abstract class AnalyzeCallback {
 		return this.frequencyMax;
 	}
 
-	public void setyValue(double y) {
+	public void setyValue(double y, double x) {
 		if (y < this.yMinValue) {
 			this.yMinValue = y;
 		} else if (y > this.yMaxValue) {
 			this.yMaxValue = y;
+			this.yMaxXValue = x;
 		}
 		yValueSum += y;
 		yValueCount ++;
+	}
+	
+	public void setxValue(double x) {
+		if (x < this.xMinValue) {
+			this.xMinValue = x;
+		} else if (x > this.xMaxValue) {
+			this.xMaxValue = x;
+		}
 	}
 
 	public void setFrequency(int freq) {
