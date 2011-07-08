@@ -63,7 +63,7 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 
 	private void repaintConfigTable(String[] csvColumns) {
 		this.removeAll();
-		JLabel label = new JLabel("view config", SwingConstants.LEFT);
+		JLabel label = new JLabel("chart datasource config", SwingConstants.LEFT);
 		label.setVisible(true);
 		this.add(label, BorderLayout.NORTH);
 

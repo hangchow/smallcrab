@@ -5,6 +5,9 @@ smallcrab是一个对文本文件进行逐行扫描分析的客户端软件。
 http://code.google.com/p/smallcrab/downloads/list
 
 使用说明：
-csv日志分析说明 https://github.com/seanlinwang/smallcrab/raw/master/doc/draw_rl_tps_from_csv.png
+csv延時和頻率分析  https://github.com/seanlinwang/smallcrab/raw/master/doc/draw_rl_tps_from_csv.png
+
+最新截圖：
+csv延時和頻率 https://github.com/seanlinwang/smallcrab/raw/master/doc/csv_new.png
 
 

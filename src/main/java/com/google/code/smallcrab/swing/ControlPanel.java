@@ -219,7 +219,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 				callback.setFrequency(count, entry.getKey());
 			}
 			taskOutput.append(String.format("frequency min:%s\n", callback.getFrequencyMinValue()));
-			cal.setTimeInMillis((long) callback.getFrequencYMaxXValue());
+			cal.setTimeInMillis((long) callback.getFrequencyMaxXValue());
 			taskOutput.append(String.format("frequency max:%s at x:%s\n", callback.getFrequencyMaxValue(),dateFormat.format(cal.getTime())));
 			taskOutput.append(String.format("frequency average:%s\n", callback.getFrequencyAverage()));
 			chartPanel.setxMinCount(callback.getFrequencyMinValue());

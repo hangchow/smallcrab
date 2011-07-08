@@ -36,7 +36,7 @@ public abstract class AnalyzeCallback {
 
 	private int frequencyMaxValue = Integer.MIN_VALUE;
 
-	private double frequencYMaxXValue;
+	private double frequencyMaxXValue = Double.MIN_VALUE;
 	
 	public long getAnalyzedSize() {
 		return this.analyzedSize;
@@ -82,8 +82,8 @@ public abstract class AnalyzeCallback {
 
 
 
-	public double getFrequencYMaxXValue() {
-		return frequencYMaxXValue;
+	public double getFrequencyMaxXValue() {
+		return frequencyMaxXValue;
 	}
 
 	public double getXMinValue() {
@@ -142,7 +142,7 @@ public abstract class AnalyzeCallback {
 			this.frequencyMinValue = freq;
 		} else if (freq > this.frequencyMaxValue) {
 			this.frequencyMaxValue = freq;
-			this.frequencYMaxXValue = x;
+			this.frequencyMaxXValue = x;
 		}
 		this.frequencySum += freq;
 		this.frequencyCount ++;
