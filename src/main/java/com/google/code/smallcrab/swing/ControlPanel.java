@@ -29,9 +29,9 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.google.code.smallcrab.analyze.AnalyzeCallback;
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
 import com.google.code.smallcrab.protocol.Format;
+import com.google.code.smallcrab.reducer.AnalyzeCallback;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 
 /**
  * Control panel with analyze task.

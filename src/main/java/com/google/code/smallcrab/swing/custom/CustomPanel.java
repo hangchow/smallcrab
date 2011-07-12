@@ -22,10 +22,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
-import com.google.code.smallcrab.analyze.java.CsvJavaScanner;
 import com.google.code.smallcrab.config.ConfigException;
+import com.google.code.smallcrab.mapper.java.CsvJavaMapper;
 import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
 import com.google.code.smallcrab.utils.StringKit;
 import com.google.code.smallcrab.utils.SwingKit;
@@ -96,7 +96,7 @@ public class CustomPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatche
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		CsvJavaScanner scanner = new CsvJavaScanner();
+		CsvJavaMapper scanner = new CsvJavaMapper();
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
 		return analyzer;
 	}

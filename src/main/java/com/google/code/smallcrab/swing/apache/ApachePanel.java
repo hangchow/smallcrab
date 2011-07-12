@@ -27,9 +27,8 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableModel;
 
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
-import com.google.code.smallcrab.analyze.apache.ApacheCountScanner;
 import com.google.code.smallcrab.config.ConfigException;
+import com.google.code.smallcrab.mapper.apache.ApacheCountMapper;
 import com.google.code.smallcrab.matcher.apache.ApacheAgentMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheCodeMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheDomainMatcher;
@@ -39,6 +38,7 @@ import com.google.code.smallcrab.matcher.apache.ApacheMethodMatcher;
 import com.google.code.smallcrab.matcher.apache.ApachePathMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheQueryMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheReferrerMatcher;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
 import com.google.code.smallcrab.swing.utils.ColumnResizer;
 import com.google.code.smallcrab.utils.StringKit;
@@ -225,7 +225,7 @@ public class ApachePanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheL
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		ApacheCountScanner scanner = new ApacheCountScanner();
+		ApacheCountMapper scanner = new ApacheCountMapper();
 		scanner.setLineViewers(this.prepareViewers());
 		scanner.setLineMatchers(this.prepareMatchers());
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);

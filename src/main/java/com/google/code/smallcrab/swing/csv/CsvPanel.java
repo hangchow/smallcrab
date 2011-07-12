@@ -18,9 +18,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableModel;
 
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
-import com.google.code.smallcrab.analyze.csv.CsvXYSplotsScanner;
+import com.google.code.smallcrab.mapper.csv.CsvXYSplotsMapper;
 import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
 import com.google.code.smallcrab.utils.StringKit;
 import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
@@ -124,7 +124,7 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		CsvXYSplotsScanner scanner = new CsvXYSplotsScanner();
+		CsvXYSplotsMapper scanner = new CsvXYSplotsMapper();
 		scanner.setLineViewers(this.prepareViewers());
 		scanner.setLineMatchers(this.prepareMatchers());
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);

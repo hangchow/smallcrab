@@ -1,8 +1,8 @@
-package com.google.code.smallcrab.analyze.apache;
+package com.google.code.smallcrab.mapper.apache;
 
 import java.util.List;
 
-import com.google.code.smallcrab.analyze.LineScanner;
+import com.google.code.smallcrab.mapper.Mapper;
 import com.google.code.smallcrab.matcher.LineMatcher;
 import com.google.code.smallcrab.matcher.apache.ApacheLogLineMatcher;
 import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
@@ -15,7 +15,7 @@ import com.google.code.smallcrab.viewer.apache.ApacheLogLineViewer;
  * @date Dec 29, 2010
  * 
  */
-public class ApacheCountScanner implements LineScanner {
+public class ApacheCountMapper implements Mapper {
 	/**
 	 * log line matcher
 	 */
@@ -46,7 +46,7 @@ public class ApacheCountScanner implements LineScanner {
 	 * @see com.google.code.smallcrab.scan.LineScanner#scan(java.lang.String)
 	 */
 	@Override
-	public String[] scan(String line) {
+	public String[] map(String line) {
 		ApacheLogPackage spliter = new ApacheLogPackage();
 		spliter.split(line);// split and store segments
 		boolean allMatched = true;

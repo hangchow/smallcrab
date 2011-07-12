@@ -1,12 +1,12 @@
 /**
  * 
  */
-package com.google.code.smallcrab.analyze.csv;
+package com.google.code.smallcrab.mapper.csv;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.code.smallcrab.analyze.LineScanner;
+import com.google.code.smallcrab.mapper.Mapper;
 import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
 import com.google.code.smallcrab.protocol.csv.CsvPackage;
 import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
@@ -15,7 +15,7 @@ import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
  * @author seanlinwang at gmail dot com
  * @date 2011-6-20
  */
-public class CsvXYSplotsScanner implements LineScanner {
+public class CsvXYSplotsMapper implements Mapper {
 	private List<CsvLineMatcher> lineMatchers;
 
 	private List<CsvLineViewer> lineViewers;
@@ -54,7 +54,7 @@ public class CsvXYSplotsScanner implements LineScanner {
 	 * @see com.google.code.smallcrab.analyze.LineScanner#scan(java.lang.String)
 	 */
 	@Override
-	public String[] scan(String line) {
+	public String[] map(String line) {
 		CsvPackage spliter = new CsvPackage();
 		spliter.split(line);
 		String[] result = new String[yAxislineViewers.size() + 1];

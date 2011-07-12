@@ -8,9 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
 import com.google.code.smallcrab.config.ConfigException;
 import com.google.code.smallcrab.matcher.iis.IisLogLineMatcher;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
 import com.google.code.smallcrab.viewer.iis.IisLogLineViewer;
 

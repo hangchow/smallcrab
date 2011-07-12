@@ -10,9 +10,9 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
 import com.google.code.smallcrab.config.ConfigException;
 import com.google.code.smallcrab.matcher.LineMatcher;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.viewer.LineViewer;
 
 /**
