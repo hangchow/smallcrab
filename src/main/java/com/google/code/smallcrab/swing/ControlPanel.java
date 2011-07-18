@@ -89,7 +89,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		}
 
 		private FileAnalyzer analyzer;
-
+		
 		private ChartConfig chartConfig;
 
 		/*
@@ -106,7 +106,6 @@ public class ControlPanel extends JPanel implements ActionListener {
 					AnalyzeConfigPanel<?, ?> selectedConfig = getSelectedConfigPanel();
 					this.analyzer = selectedConfig.createFileLineAnalyzer();
 					this.chartConfig = selectedConfig.createChartConfig();
-
 					setProgress(0);
 					outputClear();
 					outputAnalyzeStart(totalLength);
@@ -236,7 +235,6 @@ public class ControlPanel extends JPanel implements ActionListener {
 			chartPanel.setResult(result);
 			chartPanel.setxCount(xCount);
 			chartPanel.setChartConfig(chartConfig);
-
 			chartPanel.repaint();
 		}
 
