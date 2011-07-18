@@ -10,10 +10,11 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
 import com.google.code.smallcrab.config.ConfigException;
-import com.google.code.smallcrab.matcher.LineMatcher;
-import com.google.code.smallcrab.viewer.LineViewer;
+import com.google.code.smallcrab.config.chart.ChartConfig;
+import com.google.code.smallcrab.config.matcher.LineMatcher;
+import com.google.code.smallcrab.config.viewer.LineViewer;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 
 /**
  * @author seanlinwang at gmail dot com
@@ -25,6 +26,9 @@ public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends Li
 
 	public AnalyzeConfigPanel(LayoutManager layout) {
 		super(layout);
+	}
+
+	public AnalyzeConfigPanel() {
 	}
 
 	public abstract void resetConfigOutput();
@@ -70,5 +74,12 @@ public abstract class AnalyzeConfigPanel<lv extends LineViewer<?>, lm extends Li
 	 * @throws IOException
 	 */
 	protected abstract void notifyFileChange(File logFile) throws IOException;
+
+	/**
+	 * create chart config
+	 * 
+	 * @return
+	 */
+	protected abstract ChartConfig createChartConfig();
 
 }

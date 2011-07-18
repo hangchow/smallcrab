@@ -4,6 +4,7 @@
 package com.google.code.smallcrab.swing.csv;
 
 import java.awt.BorderLayout;
+import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,17 +14,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import javax.swing.table.TableModel;
 
-import com.google.code.smallcrab.analyze.FileLineAnalyzer;
-import com.google.code.smallcrab.analyze.csv.CsvXYSplotsScanner;
-import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
+import com.google.code.smallcrab.config.chart.ChartConfig;
+import com.google.code.smallcrab.config.matcher.csv.CsvLineMatcher;
+import com.google.code.smallcrab.config.viewer.csv.CsvLineViewer;
+import com.google.code.smallcrab.mapper.csv.CsvXYSplotsMapper;
+import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
 import com.google.code.smallcrab.utils.StringKit;
-import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 
 /**
  * @author seanlinwang at gmail dot com
@@ -33,13 +32,21 @@ import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> {
 
 	private static final long serialVersionUID = -1486532994587869954L;
-	private CsvViewConfigTable csvViewConfigTable;
 
-	public CsvPanel() {
+	private CsvDataSourceConfigPanel dataSourceConfigPanel;
+
+	private CsvChartConfigPanel chartConfigPanel;
+
+	private ItemListener frequencyCheckListener;
+
+	public CsvPanel(ItemListener listener) {
 		super(new BorderLayout());
 		setName("csv");
-
-		repaintConfigTable(new String[] { "column one", "column two", "column three" });
+		this.frequencyCheckListener = listener;
+		this.dataSourceConfigPanel = new CsvDataSourceConfigPanel(new String[] { "column one", "column two", "column three" });
+		this.add(this.dataSourceConfigPanel, BorderLayout.NORTH);
+		this.chartConfigPanel = new CsvChartConfigPanel(frequencyCheckListener);
+		this.add(this.chartConfigPanel, BorderLayout.SOUTH);
 	}
 
 	@Override
@@ -56,28 +63,9 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 				in.close();
 			}
 		}
-		String[] csvColumns = StringKit.split(line, ',');
+		String[] csvColumns = StringKit.splitPreserveAllTokens(line, ',');
 
-		repaintConfigTable(csvColumns);
-	}
-
-	private void repaintConfigTable(String[] csvColumns) {
-		this.removeAll();
-		JLabel label = new JLabel("chart datasource config", SwingConstants.LEFT);
-		label.setVisible(true);
-		this.add(label, BorderLayout.NORTH);
-
-		this.csvViewConfigTable = new CsvViewConfigTable(csvColumns);
-		JScrollPane scrollPane = new JScrollPane(csvViewConfigTable);
-		scrollPane.setVisible(true);
-		this.add(scrollPane, BorderLayout.CENTER);
-
-		// this.repaint();
-		// int tablePreferredWidth = ColumnResizer.getTablePreferredWidth(csvViewConfigTable);
-		// this.csvViewConfigTable.setPreferredScrollableViewportSize(new Dimension(tablePreferredWidth + 30, 350));
-		// ColumnResizer.setFixColumnWidth(this.csvViewConfigTable, 2, 25);
-		// JScrollPane scrollPane = new JScrollPane(csvViewConfigTable);
-		// this.add(scrollPane, BorderLayout.CENTER);
+		this.dataSourceConfigPanel.setCsvColuns(csvColumns);
 	}
 
 	/*
@@ -98,16 +86,16 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	@Override
 	protected List<CsvLineViewer> prepareViewers() {
 		List<CsvLineViewer> viewers = new ArrayList<CsvLineViewer>();
-		TableModel viewModel = this.csvViewConfigTable.getModel();
+		TableModel viewModel = this.dataSourceConfigPanel.getDataSourceModel();
 		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
 			boolean used = (Boolean) viewModel.getValueAt(rowIndex, 2);
 			if (used) {
 				String axisSelect = (String) viewModel.getValueAt(rowIndex, 1);
-				if (axisSelect.equals(CsvViewTableModel.axises[1])) { // x axis
+				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x axis
 					CsvLineViewer xAxislineViewer = new CsvLineViewer(rowIndex);
 					xAxislineViewer.setXAxis(true);
 					viewers.add(xAxislineViewer);
-				} else if (axisSelect.equals(CsvViewTableModel.axises[2])) {// y axis
+				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) {// y axis
 					CsvLineViewer yAxisLineViewer = new CsvLineViewer(rowIndex);
 					yAxisLineViewer.setYAxis(true);
 					viewers.add(yAxisLineViewer);
@@ -124,11 +112,16 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		CsvXYSplotsScanner scanner = new CsvXYSplotsScanner();
+		CsvXYSplotsMapper scanner = new CsvXYSplotsMapper();
 		scanner.setLineViewers(this.prepareViewers());
 		scanner.setLineMatchers(this.prepareMatchers());
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
 		return analyzer;
+	}
+
+	@Override
+	protected ChartConfig createChartConfig() {
+		return this.chartConfigPanel == null ? null : this.chartConfigPanel.createChartConfig();
 	}
 
 	/*
@@ -148,16 +141,16 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	 */
 	@Override
 	public boolean isPrepared() {
-		TableModel viewModel = this.csvViewConfigTable.getModel();
+		TableModel viewModel = this.dataSourceConfigPanel.getDataSourceModel();
 		int xAxisCount = 0;
 		int yAxisCount = 0;
 		for (int rowIndex = 0; rowIndex < viewModel.getRowCount(); rowIndex++) {
 			boolean used = (Boolean) viewModel.getValueAt(rowIndex, 2);
 			if (used) {
 				String axisSelect = (String) viewModel.getValueAt(rowIndex, 1);
-				if (axisSelect.equals(CsvViewTableModel.axises[1])) { // x axis
+				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x axis
 					xAxisCount++;
-				} else if (axisSelect.equals(CsvViewTableModel.axises[2])) {// y axis
+				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) {// y axis
 					yAxisCount++;
 				}
 			}

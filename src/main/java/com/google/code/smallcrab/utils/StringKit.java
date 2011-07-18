@@ -167,6 +167,43 @@ public class StringKit {
 	public static String[] split(String str, char separatorChar) {
 		return splitWorker(str, separatorChar, false);
 	}
+	
+
+    /**
+     * <p>Splits the provided text into an array, separator specified,
+     * preserving all tokens, including empty tokens created by adjacent
+     * separators. This is an alternative to using StringTokenizer.</p>
+     *
+     * <p>The separator is not included in the returned String array.
+     * Adjacent separators are treated as separators for empty tokens.
+     * For more control over the split use the StrTokenizer class.</p>
+     *
+     * <p>A <code>null</code> input String returns <code>null</code>.</p>
+     *
+     * <pre>
+     * StringUtils.splitPreserveAllTokens(null, *)         = null
+     * StringUtils.splitPreserveAllTokens("", *)           = []
+     * StringUtils.splitPreserveAllTokens("a.b.c", '.')    = ["a", "b", "c"]
+     * StringUtils.splitPreserveAllTokens("a..b.c", '.')   = ["a", "", "b", "c"]
+     * StringUtils.splitPreserveAllTokens("a:b:c", '.')    = ["a:b:c"]
+     * StringUtils.splitPreserveAllTokens("a\tb\nc", null) = ["a", "b", "c"]
+     * StringUtils.splitPreserveAllTokens("a b c", ' ')    = ["a", "b", "c"]
+     * StringUtils.splitPreserveAllTokens("a b c ", ' ')   = ["a", "b", "c", ""]
+     * StringUtils.splitPreserveAllTokens("a b c  ", ' ')   = ["a", "b", "c", "", ""]
+     * StringUtils.splitPreserveAllTokens(" a b c", ' ')   = ["", a", "b", "c"]
+     * StringUtils.splitPreserveAllTokens("  a b c", ' ')  = ["", "", a", "b", "c"]
+     * StringUtils.splitPreserveAllTokens(" a b c ", ' ')  = ["", a", "b", "c", ""]
+     * </pre>
+     *
+     * @param str  the String to parse, may be <code>null</code>
+     * @param separatorChar  the character used as the delimiter,
+     *  <code>null</code> splits on whitespace
+     * @return an array of parsed Strings, <code>null</code> if null String input
+     * @since 2.1
+     */
+    public static String[] splitPreserveAllTokens(String str, char separatorChar) {
+        return splitWorker(str, separatorChar, true);
+    }
 
 	/**
 	 * Performs the logic for the <code>split</code> and

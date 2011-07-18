@@ -21,7 +21,7 @@ public class CsvPackage implements LinePackege {
 	 */
 	@Override
 	public void split(String line) {
-		segs = StringKit.split(line, ',');
+		segs = StringKit.splitPreserveAllTokens(line, ',');
 	}
 
 	@Override
