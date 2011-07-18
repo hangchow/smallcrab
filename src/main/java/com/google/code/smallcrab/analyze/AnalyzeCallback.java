@@ -119,7 +119,8 @@ public abstract class AnalyzeCallback {
 	public void setYValue(double y, double x) {
 		if (y < this.yMinValue) {
 			this.yMinValue = y;
-		} else if (y > this.yMaxValue) {
+		} 
+		if (y > this.yMaxValue) {
 			this.yMaxValue = y;
 			this.yMaxXValue = x;
 		}
@@ -130,7 +131,8 @@ public abstract class AnalyzeCallback {
 	public void setXValue(double x) {
 		if (x < this.xMinValue) {
 			this.xMinValue = x;
-		} else if (x > this.xMaxValue) {
+		} 
+		if (x > this.xMaxValue) {
 			this.xMaxValue = x;
 		}
 	}
@@ -138,7 +140,8 @@ public abstract class AnalyzeCallback {
 	public void setFrequency(int freq, double x) {
 		if(freq < this.frequencyMinValue) {
 			this.frequencyMinValue = freq;
-		} else if (freq > this.frequencyMaxValue) {
+		} 
+		if (freq > this.frequencyMaxValue) {
 			this.frequencyMaxValue = freq;
 			this.frequencyMaxXValue = x;
 		}

@@ -1,5 +1,6 @@
-smallcrab是一个对文本文件进行逐行扫描分析的客户端软件。
-支持apache/iis custom log, csv,未来增加更多的分析格式。
+smallcrab是一个对文本文件进行逐行扫描(map)并分析(reduce)的软件。
+支持apache/iis custom log, csv,未来增加更多的分析格式。你可以把它用于
+分析性能日志,或者监控访问量等等需要处理文本文件的地方.
 
 下载地址:
 http://code.google.com/p/smallcrab/downloads/list
