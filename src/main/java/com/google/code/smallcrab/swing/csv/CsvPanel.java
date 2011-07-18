@@ -56,7 +56,7 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 				in.close();
 			}
 		}
-		String[] csvColumns = StringKit.split(line, ',');
+		String[] csvColumns = StringKit.splitPreserveAllTokens(line, ',');
 
 		repaintConfigTable(csvColumns);
 	}
