@@ -29,9 +29,10 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.google.code.smallcrab.config.chart.ChartConfig;
 import com.google.code.smallcrab.protocol.Format;
 import com.google.code.smallcrab.reducer.AnalyzeCallback;
-import com.google.code.smallcrab.reducer.FileLineAnalyzer;
+import com.google.code.smallcrab.reducer.FileAnalyzer;
 
 /**
  * Control panel with analyze task.
@@ -83,7 +84,9 @@ public class ControlPanel extends JPanel implements ActionListener {
 			return isPaused;
 		}
 
-		private FileLineAnalyzer analyzer;
+		private FileAnalyzer analyzer;
+		
+		private ChartConfig chartConfig;
 
 		/*
 		 * Main task. Executed in background thread.
@@ -98,6 +101,8 @@ public class ControlPanel extends JPanel implements ActionListener {
 					final long totalLength = sourceFile.length();
 					AnalyzeConfigPanel<?, ?> selectedConfig = getSelectedConfigPanel();
 					this.analyzer = selectedConfig.createFileLineAnalyzer();
+					this.chartConfig = selectedConfig.createChartConfig();
+					
 					setProgress(0);
 					outputClear();
 					outputAnalyzeStart(totalLength);
@@ -144,7 +149,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 						final Map<Double, Integer> xCount = new HashMap<Double, Integer>(10240);
 						analyzer.analyzeXYSplots(sourceFile, xySpots, xCount, ac);
 						outputResultHeader(analyzer, totalLength, ac);
-						outputResultXYSplots(analyzer, totalLength, xySpots, xCount, ac);
+						outputResultXYSplots(analyzer, chartConfig, totalLength, xySpots, xCount, ac);
 					}
 					toolBarPanel.clickStopButton();
 					setTitle("Stop");
@@ -167,7 +172,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 			taskOutput.append("= Size:" + totalLength + "bytes\n");
 		}
 
-		private void outputResultHeader(FileLineAnalyzer ala, final long totalLength, final AnalyzeCallback ac) {
+		private void outputResultHeader(FileAnalyzer ala, final long totalLength, final AnalyzeCallback ac) {
 			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
 			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
 			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
@@ -175,7 +180,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 			taskOutput.append("===============================================\n");
 		}
 
-		private void outputResultCount(FileLineAnalyzer ala, final long totalLength, Map<String, Integer> result, final AnalyzeCallback callback) {
+		private void outputResultCount(FileAnalyzer ala, final long totalLength, Map<String, Integer> result, final AnalyzeCallback callback) {
 			Object[] resultArray = result.entrySet().toArray();
 			Arrays.sort(resultArray, new Comparator<Object>() {
 				@SuppressWarnings("unchecked")
@@ -191,7 +196,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 			}
 		}
 
-		private void outputResultAppend(FileLineAnalyzer ala, final long totalLength, Map<String, Set<String>> result, final AnalyzeCallback callback) {
+		private void outputResultAppend(FileAnalyzer ala, final long totalLength, Map<String, Set<String>> result, final AnalyzeCallback callback) {
 			for (Iterator<Entry<String, Set<String>>> itt = result.entrySet().iterator(); itt.hasNext();) {
 				Entry<String, Set<String>> next = itt.next();
 				taskOutput.append(next.getKey() + "," + next.getValue() + "\n");
@@ -201,7 +206,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		private DateFormat dateFormat = Format.getDateFormat();
 		private Calendar cal = Format.getCalendar();
 
-		public void outputResultXYSplots(FileLineAnalyzer analyzer, long totalLength, List<List<Double>> result, Map<Double, Integer> xCount, AnalyzeCallback callback) {
+		public void outputResultXYSplots(FileAnalyzer analyzer, ChartConfig chartConfig, long totalLength, List<List<Double>> result, Map<Double, Integer> xCount, AnalyzeCallback callback) {
 			cal.setTimeInMillis((long) callback.getXMinValue());
 			taskOutput.append(String.format("x min:%s\n", dateFormat.format(cal.getTime())));
 			cal.setTimeInMillis((long) callback.getXMaxValue());
@@ -226,6 +231,8 @@ public class ControlPanel extends JPanel implements ActionListener {
 			chartPanel.setxMaxCount(callback.getFrequencyMaxValue());
 			chartPanel.setResult(result);
 			chartPanel.setxCount(xCount);
+			chartPanel.setChartConfig(chartConfig);
+			
 			chartPanel.repaint();
 		}
 
@@ -288,7 +295,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 				// do nothing
 			}
 		});
-		this.configPane.setPreferredSize(new Dimension(450, 500));
+		this.configPane.setPreferredSize(new Dimension(470, 500));
 		add(configPane, BorderLayout.CENTER);
 	}
 

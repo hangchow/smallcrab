@@ -28,30 +28,31 @@ import javax.swing.SwingConstants;
 import javax.swing.table.TableModel;
 
 import com.google.code.smallcrab.config.ConfigException;
+import com.google.code.smallcrab.config.chart.ChartConfig;
+import com.google.code.smallcrab.config.matcher.apache.ApacheAgentMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheCodeMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheDomainMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheIPMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheLogLineMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheMethodMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApachePathMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheQueryMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheReferrerMatcher;
+import com.google.code.smallcrab.config.viewer.apache.ApacheAgentViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheAllViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheCodeViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheDomainViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheIPViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheLogLineViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheMethodViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApachePathViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheQueryViewer;
+import com.google.code.smallcrab.config.viewer.apache.ApacheReferrerViewer;
 import com.google.code.smallcrab.mapper.apache.ApacheCountMapper;
-import com.google.code.smallcrab.matcher.apache.ApacheAgentMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheCodeMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheDomainMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheIPMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheLogLineMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheMethodMatcher;
-import com.google.code.smallcrab.matcher.apache.ApachePathMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheQueryMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheReferrerMatcher;
 import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
 import com.google.code.smallcrab.swing.utils.ColumnResizer;
 import com.google.code.smallcrab.utils.StringKit;
-import com.google.code.smallcrab.viewer.apache.ApacheAgentViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheAllViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheCodeViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheDomainViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheIPViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheLogLineViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheMethodViewer;
-import com.google.code.smallcrab.viewer.apache.ApachePathViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheQueryViewer;
-import com.google.code.smallcrab.viewer.apache.ApacheReferrerViewer;
 
 /**
  * Apache log analyze config panel.
@@ -117,7 +118,7 @@ public class ApachePanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheL
 
 	@Override
 	protected void notifyFileChange(File logFile) throws IOException {
-		
+
 	}
 
 	public void resetConfigOutput() {
@@ -230,6 +231,11 @@ public class ApachePanel extends AnalyzeConfigPanel<ApacheLogLineViewer, ApacheL
 		scanner.setLineMatchers(this.prepareMatchers());
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
 		return analyzer;
+	}
+
+	@Override
+	protected ChartConfig createChartConfig() {
+		return null;
 	}
 
 	/*

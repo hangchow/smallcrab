@@ -25,10 +25,7 @@ public class ConfigTabbedPanel extends JTabbedPane {
 		ApachePanel apacheLogPanel = new ApachePanel();
 		add(apacheLogPanel);
 
-		//IisPanel iisLogPanel = new IisPanel();
-		//add(iisLogPanel);
-
-		setSelectedIndex(0);// set apache log panel as default
+		setSelectedIndex(0);
 		addChangeListener(changeListener);
 	}
 

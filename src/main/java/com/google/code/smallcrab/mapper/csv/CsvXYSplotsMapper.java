@@ -6,10 +6,10 @@ package com.google.code.smallcrab.mapper.csv;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.code.smallcrab.config.matcher.csv.CsvLineMatcher;
+import com.google.code.smallcrab.config.viewer.csv.CsvLineViewer;
 import com.google.code.smallcrab.mapper.Mapper;
-import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
 import com.google.code.smallcrab.protocol.csv.CsvPackage;
-import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 
 /**
  * @author seanlinwang at gmail dot com

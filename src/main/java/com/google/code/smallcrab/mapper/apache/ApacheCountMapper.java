@@ -2,11 +2,11 @@ package com.google.code.smallcrab.mapper.apache;
 
 import java.util.List;
 
+import com.google.code.smallcrab.config.matcher.LineMatcher;
+import com.google.code.smallcrab.config.matcher.apache.ApacheLogLineMatcher;
+import com.google.code.smallcrab.config.viewer.apache.ApacheLogLineViewer;
 import com.google.code.smallcrab.mapper.Mapper;
-import com.google.code.smallcrab.matcher.LineMatcher;
-import com.google.code.smallcrab.matcher.apache.ApacheLogLineMatcher;
 import com.google.code.smallcrab.protocol.apache.ApacheLogPackage;
-import com.google.code.smallcrab.viewer.apache.ApacheLogLineViewer;
 
 /**
  * Default apache log scanner, contain match rules.

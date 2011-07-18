@@ -27,7 +27,6 @@ public abstract class ConfigTable extends JTable {
 	public ConfigTable(TableModel tableModel) {
 		super(tableModel);
 		this.setRowHeight(20);
-		//ColumnResizer.adjustColumnPreferredWidths(this, 1);
 		this.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		this.paintRow();
 	}
