@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.util.List;
 
 import com.google.code.smallcrab.config.ConfigException;
-import com.google.code.smallcrab.matcher.iis.IisLogLineMatcher;
+import com.google.code.smallcrab.config.chart.ChartConfig;
+import com.google.code.smallcrab.config.matcher.iis.IisLogLineMatcher;
+import com.google.code.smallcrab.config.viewer.iis.IisLogLineViewer;
 import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
-import com.google.code.smallcrab.viewer.iis.IisLogLineViewer;
 
 /**
  * @author seanlinwang at gmail dot com
@@ -59,7 +60,12 @@ public class IisPanel extends AnalyzeConfigPanel<IisLogLineViewer, IisLogLineMat
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
-		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	@Override
+	protected ChartConfig createChartConfig() {
 		return null;
 	}
 
@@ -70,7 +76,6 @@ public class IisPanel extends AnalyzeConfigPanel<IisLogLineViewer, IisLogLineMat
 	 */
 	@Override
 	protected List<IisLogLineMatcher> prepareMatchers() throws ConfigException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -88,6 +88,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	 */
 	private long analyzePeriod;
 
+	@Override
 	public long getAnalyzePeriod() {
 		return analyzePeriod;
 	}
@@ -317,10 +318,12 @@ public class FileLineAnalyzer implements FileAnalyzer {
 	/**
 	 * 
 	 */
+	@Override
 	public void pause() {
 		this.paused = true;
 	}
 
+	@Override
 	public void unpause() {
 		this.paused = false;
 		pausedLock.lock();
@@ -331,6 +334,7 @@ public class FileLineAnalyzer implements FileAnalyzer {
 		}
 	}
 
+	@Override
 	public void finish() {
 		try {
 			linePool.put(eof);

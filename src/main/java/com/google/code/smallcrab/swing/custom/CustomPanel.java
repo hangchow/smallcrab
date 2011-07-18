@@ -23,13 +23,14 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 import com.google.code.smallcrab.config.ConfigException;
+import com.google.code.smallcrab.config.chart.ChartConfig;
+import com.google.code.smallcrab.config.matcher.csv.CsvLineMatcher;
+import com.google.code.smallcrab.config.viewer.csv.CsvLineViewer;
 import com.google.code.smallcrab.mapper.java.CsvJavaMapper;
-import com.google.code.smallcrab.matcher.csv.CsvLineMatcher;
 import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
 import com.google.code.smallcrab.utils.StringKit;
 import com.google.code.smallcrab.utils.SwingKit;
-import com.google.code.smallcrab.viewer.csv.CsvLineViewer;
 
 /**
  * @author seanlinwang at gmail dot com
@@ -99,6 +100,11 @@ public class CustomPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatche
 		CsvJavaMapper scanner = new CsvJavaMapper();
 		FileLineAnalyzer analyzer = new FileLineAnalyzer(scanner);
 		return analyzer;
+	}
+
+	@Override
+	protected ChartConfig createChartConfig() {
+		return null;
 	}
 
 	/*

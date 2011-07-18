@@ -54,4 +54,12 @@ public interface FileAnalyzer {
 	 * @return a flag indicate analyzing paused or not
 	 */
 	boolean isPaused();
+
+	long getAnalyzePeriod();
+
+	void pause();
+
+	void unpause();
+
+	void finish();
 }

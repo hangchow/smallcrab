@@ -3,6 +3,11 @@
  */
 package com.google.code.smallcrab.swing;
 
+import java.awt.Color;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.AbstractButton;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeListener;
 
@@ -17,18 +22,15 @@ import com.google.code.smallcrab.swing.csv.CsvPanel;
 public class ConfigTabbedPanel extends JTabbedPane {
 	private static final long serialVersionUID = 1402513027159984002L;
 
-	public ConfigTabbedPanel(ChangeListener changeListener) {
+	public ConfigTabbedPanel(ChangeListener changeListener, ItemListener frequencyListener) {
 		super();
-		CsvPanel csvPanel = new CsvPanel();
+		CsvPanel csvPanel = new CsvPanel(frequencyListener);
 		add(csvPanel);
-		
+
 		ApachePanel apacheLogPanel = new ApachePanel();
 		add(apacheLogPanel);
 
-		//IisPanel iisLogPanel = new IisPanel();
-		//add(iisLogPanel);
-
-		setSelectedIndex(0);// set apache log panel as default
+		setSelectedIndex(0);
 		addChangeListener(changeListener);
 	}
 
