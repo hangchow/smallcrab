@@ -17,6 +17,10 @@ public class Format {
 	public static DateFormat getDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	}
+	
+	public static DateFormat getShortDateFormat() {
+		return new SimpleDateFormat("yyMMdd HH:mm:ss");
+	}
 
 	public static Calendar getCalendar() {
 		return new GregorianCalendar();

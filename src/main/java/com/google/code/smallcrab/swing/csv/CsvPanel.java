@@ -45,7 +45,11 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 		this.frequencyCheckListener = listener;
 		this.dataSourceConfigPanel = new CsvDataSourceConfigPanel(new String[] { "column one", "column two", "column three" });
 		this.add(this.dataSourceConfigPanel, BorderLayout.NORTH);
-		this.chartConfigPanel = new CsvChartConfigPanel(frequencyCheckListener);
+		this.chartConfigPanel = new CsvChartConfigPanel();
+		this.chartConfigPanel.setFrequencyListener(this.frequencyCheckListener);
+		this.chartConfigPanel.setFrequencyAverageListener(this.frequencyCheckListener);
+		this.chartConfigPanel.setYListener(this.frequencyCheckListener);
+		this.chartConfigPanel.setYAverageListener(this.frequencyCheckListener);
 		this.add(this.chartConfigPanel, BorderLayout.SOUTH);
 	}
 
@@ -71,7 +75,8 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.google.code.smallcrab.swing.AnalyzeConfigPanel#resetConfigOutput()
+	 * @see
+	 * com.google.code.smallcrab.swing.AnalyzeConfigPanel#resetConfigOutput()
 	 */
 	@Override
 	public void resetConfigOutput() {
@@ -91,11 +96,13 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 			boolean used = (Boolean) viewModel.getValueAt(rowIndex, 2);
 			if (used) {
 				String axisSelect = (String) viewModel.getValueAt(rowIndex, 1);
-				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x axis
+				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x
+																			// axis
 					CsvLineViewer xAxislineViewer = new CsvLineViewer(rowIndex);
 					xAxislineViewer.setXAxis(true);
 					viewers.add(xAxislineViewer);
-				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) {// y axis
+				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) {// y
+																					// axis
 					CsvLineViewer yAxisLineViewer = new CsvLineViewer(rowIndex);
 					yAxisLineViewer.setYAxis(true);
 					viewers.add(yAxisLineViewer);
@@ -108,7 +115,9 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.google.code.smallcrab.swing.AnalyzeConfigPanel#createFileLineAnalyzer()
+	 * @see
+	 * com.google.code.smallcrab.swing.AnalyzeConfigPanel#createFileLineAnalyzer
+	 * ()
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {
@@ -148,9 +157,11 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 			boolean used = (Boolean) viewModel.getValueAt(rowIndex, 2);
 			if (used) {
 				String axisSelect = (String) viewModel.getValueAt(rowIndex, 1);
-				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x axis
+				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x
+																			// axis
 					xAxisCount++;
-				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) {// y axis
+				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) {// y
+																					// axis
 					yAxisCount++;
 				}
 			}

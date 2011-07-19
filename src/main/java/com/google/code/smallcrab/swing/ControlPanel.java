@@ -1,7 +1,6 @@
 package com.google.code.smallcrab.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.swing.AbstractButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -305,7 +303,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 				}
 			}
 		});
-		this.configPane.setPreferredSize(new Dimension(470, 500));
+		this.configPane.setPreferredSize(new Dimension(500, 500));
 		add(configPane, BorderLayout.CENTER);
 	}
 

@@ -2,23 +2,44 @@ package com.google.code.smallcrab.config.chart;
 
 public class ChartConfig {
 
-	private boolean needFrequency;
+	private boolean drawFrequency;
 	
-	private boolean needAverage;
+	private boolean drawFrequencyAverage;
 
-	public void setNeedFrequency(boolean needFrequency) {
-		this.needFrequency = needFrequency;
+	private boolean drawY;
+	
+	private boolean drawYAverage;
+	
+	public void setDrawFrequency(boolean drawFrequency) {
+		this.drawFrequency = drawFrequency;
 	}
 
-	public boolean isNeedFrequency() {
-		return needFrequency;
+	public boolean isDrawFrequency() {
+		return drawFrequency;
 	}
 
-	public void setNeedAverage(boolean needAverage) {
-		this.needAverage = needAverage;
+	public void setDrawYAverage(boolean drawYAverage) {
+		this.drawYAverage = drawYAverage;
 	}
 
-	public boolean isNeedAverage() {
-		return needAverage;
+	public boolean isDrawYAverage() {
+		return drawYAverage;
 	}
+
+	public boolean isDrawFrequencyAverage() {
+		return drawFrequencyAverage;
+	}
+
+	public void setDrawFrequencyAverage(boolean drawFrequencyAverage) {
+		this.drawFrequencyAverage = drawFrequencyAverage;
+	}
+
+	public boolean isDrawY() {
+		return drawY;
+	}
+
+	public void setDrawY(boolean drawY) {
+		this.drawY = drawY;
+	}
+	
 }
