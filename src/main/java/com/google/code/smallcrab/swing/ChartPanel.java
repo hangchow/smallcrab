@@ -285,8 +285,6 @@ public class ChartPanel extends JPanel {
 		AffineTransform transform = new AffineTransform();
 		transform.setToTranslation(borderInsets.left, this.getHeight() - borderInsets.bottom);
 		g2d.setTransform(transform);
-		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
-		g2d.setComposite(ac);
 		Object[] countArray = xCount.entrySet().toArray();
 		Arrays.sort(countArray, new Comparator<Object>() {
 			@SuppressWarnings("unchecked")
@@ -295,10 +293,11 @@ public class ChartPanel extends JPanel {
 				return (int) (((Entry<Double, Integer>) o1).getKey() - ((Entry<Double, Integer>) o2).getKey());
 			}
 		});
-		GeneralPath line = new GeneralPath();
+
 		int xAxisLength = this.getWidth() - borderInsets.right - borderInsets.left;
 		int yAxisLength = this.getHeight() - borderInsets.bottom - borderInsets.top;
-		boolean isLineStart = true;
+		AlphaComposite acPoint = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+		AlphaComposite acLine = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
 		for (Object entry : countArray) {
 			@SuppressWarnings("unchecked")
 			double x = ((Entry<Double, Integer>) entry).getKey();
@@ -309,18 +308,15 @@ public class ChartPanel extends JPanel {
 			int[] pointXs = new int[] { pointX, pointX + 1, pointX, pointX - 1 };
 			int[] pointYs = new int[] { pointY + 1, pointY, pointY - 1, pointY };
 			g2d.setColor(Color.blue);
+			g2d.setComposite(acPoint);
 			g2d.drawPolygon(pointXs, pointYs, 4);
 			g2d.fillPolygon(pointXs, pointYs, 4);
-			if (isLineStart) {
-				line.moveTo(pointX, pointY);
-				isLineStart = false;
-			} else {
-				line.lineTo(pointX, pointY);
-			}
+			GeneralPath line = new GeneralPath();
+			line.moveTo(pointX, 0);
+			line.lineTo(pointX, pointY);
+			g2d.setComposite(acLine);
+			g2d.draw(line);
 		}
-		ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-		g2d.setComposite(ac);
-		g2d.draw(line);
 
 	}
 
