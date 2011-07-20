@@ -87,7 +87,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		}
 
 		private FileAnalyzer analyzer;
-		
+
 		private ChartConfig chartConfig;
 
 		/*
@@ -207,31 +207,32 @@ public class ControlPanel extends JPanel implements ActionListener {
 		private DateFormat dateFormat = Format.getDateFormat();
 		private Calendar cal = Format.getCalendar();
 
-		public void outputResultXYSplots(FileAnalyzer analyzer, ChartConfig chartConfig, long totalLength, List<List<Double>> result, Map<Double, Integer> xCount, AnalyzeCallback callback) {
-			cal.setTimeInMillis((long) callback.getXMinValue());
+		public void outputResultXYSplots(FileAnalyzer fileAnalyzer, ChartConfig chartConfig, long totalLength, List<List<Double>> yList, Map<Double, Integer> xMapFrequency, AnalyzeCallback analyzeCallback) {
+			cal.setTimeInMillis((long) analyzeCallback.getXMinValue());
 			taskOutput.append(String.format("x min:%s\n", dateFormat.format(cal.getTime())));
-			cal.setTimeInMillis((long) callback.getXMaxValue());
+			cal.setTimeInMillis((long) analyzeCallback.getXMaxValue());
 			taskOutput.append(String.format("x max:%s\n", dateFormat.format(cal.getTime())));
-			taskOutput.append(String.format("y min:%s\n", callback.getYMinValue()));
-			cal.setTimeInMillis((long) callback.getYMaxXValue());
-			taskOutput.append(String.format("y max:%s at x:%s\n", callback.getYMaxValue(), dateFormat.format(cal.getTime())));
-			taskOutput.append(String.format("y average:%s\n", callback.getYValueAverage()));
-			chartPanel.setxMaxValue(callback.getXMaxValue());
-			chartPanel.setxMinValue(callback.getXMinValue());
-			chartPanel.setyMaxValue(callback.getYMaxValue());
-			chartPanel.setyMinValue(callback.getYMinValue());
-			for (Entry<Double, Integer> entry : xCount.entrySet()) {
+			taskOutput.append(String.format("y min:%s\n", analyzeCallback.getYMinValue()));
+			cal.setTimeInMillis((long) analyzeCallback.getYMaxXValue());
+			taskOutput.append(String.format("y max:%s at x:%s\n", analyzeCallback.getYMaxValue(), dateFormat.format(cal.getTime())));
+			taskOutput.append(String.format("y average:%s\n", analyzeCallback.getYValueAverage()));
+			for (Entry<Double, Integer> entry : xMapFrequency.entrySet()) {
 				int count = entry.getValue();
-				callback.setFrequency(count, entry.getKey());
+				analyzeCallback.setFrequency(count, entry.getKey());
 			}
-			taskOutput.append(String.format("frequency min:%s\n", callback.getFrequencyMinValue()));
-			cal.setTimeInMillis((long) callback.getFrequencyMaxXValue());
-			taskOutput.append(String.format("frequency max:%s at x:%s\n", callback.getFrequencyMaxValue(), dateFormat.format(cal.getTime())));
-			taskOutput.append(String.format("frequency average:%s\n", callback.getFrequencyAverage()));
-			chartPanel.setxMinCount(callback.getFrequencyMinValue());
-			chartPanel.setxMaxCount(callback.getFrequencyMaxValue());
-			chartPanel.setResult(result);
-			chartPanel.setxCount(xCount);
+			taskOutput.append(String.format("frequency min:%s\n", analyzeCallback.getFrequencyMinValue()));
+			cal.setTimeInMillis((long) analyzeCallback.getFrequencyMaxXValue());
+			taskOutput.append(String.format("frequency max:%s at x:%s\n", analyzeCallback.getFrequencyMaxValue(), dateFormat.format(cal.getTime())));
+			taskOutput.append(String.format("frequency average:%s\n", analyzeCallback.getFrequencyAverage()));
+			
+			chartPanel.setxMax(analyzeCallback.getXMaxValue());
+			chartPanel.setxMin(analyzeCallback.getXMinValue());
+			chartPanel.setyMax(analyzeCallback.getYMaxValue());
+			chartPanel.setyMin(analyzeCallback.getYMinValue());
+			chartPanel.setFrequencyMin(analyzeCallback.getFrequencyMinValue());
+			chartPanel.setFrequencyMax(analyzeCallback.getFrequencyMaxValue());
+			chartPanel.setyList(yList);
+			chartPanel.setxMapFrequency(xMapFrequency);
 			chartPanel.setChartConfig(chartConfig);
 			chartPanel.repaint();
 		}

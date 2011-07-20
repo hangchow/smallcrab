@@ -26,89 +26,90 @@ public class ChartPanel extends JPanel {
 
 	private static final long serialVersionUID = -5545955161976746807L;
 
+	private static final Insets borderInsets = new Insets(40, 40, 40, 40);
+
+	private static final DateFormat dateFormat = Format.getShortDateFormat();
+
+	private static final Calendar cal = Format.getCalendar();
+
+	private double xMax;
+
+	private double yMax;
+
+	private double xMin = 0;
+
+	private double yMin = 0;
+
+	private int frequencyMin = 0;
+
+	private int frequencyMax = 0;
+
+	private List<List<Double>> yList;
+
+	private Map<Double, Integer> xMapFrequency;
+
+	public void setyMax(double yMax) {
+		this.yMax = yMax;
+	}
+
+	public void setxMax(double xMax) {
+		this.xMax = xMax;
+	}
+
+	public void setxMin(double xMin) {
+		this.xMin = xMin;
+	}
+
+	public void setyMin(double yMin) {
+		this.yMin = yMin;
+	}
+
+	public void setFrequencyMin(int frequencyMin) {
+		this.frequencyMin = frequencyMin;
+	}
+
+	public void setFrequencyMax(int frequencyMax) {
+		this.frequencyMax = frequencyMax;
+	}
+
+	public void setyList(List<List<Double>> yList) {
+		this.yList = yList;
+	}
+
+	public void setxMapFrequency(Map<Double, Integer> xMapFrequency) {
+		this.xMapFrequency = xMapFrequency;
+	}
+
 	public ChartPanel() {
 		super(new BorderLayout());
-		this.setPreferredSize(new Dimension(600, 400));
+		setPreferredSize(new Dimension(600, 400));
 		setBackground(Color.white);
-	}
-
-	private double xMaxValue;
-
-	public void setxMaxValue(double xMaxValue) {
-		this.xMaxValue = xMaxValue;
-	}
-
-	private double yMaxValue;
-
-	public void setyMaxValue(double yMaxValue) {
-		this.yMaxValue = yMaxValue;
-	}
-
-	private double xMinValue = 0;
-
-	private double yMinValue = 0;
-
-	public void setxMinValue(double xMinValue) {
-		this.xMinValue = xMinValue;
-	}
-
-	public void setyMinValue(double yMinValue) {
-		this.yMinValue = yMinValue;
-	}
-
-	private double xMinCount = 0;
-
-	private double xMaxCount = 0;
-
-	public void setxMinCount(int xMinCount) {
-		this.xMinCount = xMinCount;
-	}
-
-	public void setxMaxCount(int xMaxCount) {
-		this.xMaxCount = xMaxCount;
-	}
-
-	private Insets borderInsets = new Insets(40, 40, 40, 40);
-
-	public void paintPoint(int x, int y) {
-
-	}
-
-	private List<List<Double>> result;
-
-	private Map<Double, Integer> xCount;
-
-	public void setResult(List<List<Double>> result2) {
-		this.result = result2;
-	}
-
-	public void setxCount(Map<Double, Integer> xCount) {
-		this.xCount = xCount;
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (result != null) {
+		if (yList != null) {
 			drawAxis(g);
 			drawXMark(g);
 			if (chartConfig != null) {
 				if (chartConfig.isDrawFrequency()) {
 					drawFrequencyMark(g);
-					drawFrequencyData(g);
+					drawFrequency(g);
 				}
 				if (chartConfig.isDrawY()) {
 					drawYMark(g);
-					drawYData(g);
+					drawY(g);
 				}
 			}
 		}
 	}
 
-	private DateFormat dateFormat = Format.getShortDateFormat();
-	private Calendar cal = Format.getCalendar();
-
 	private ChartConfig chartConfig;
+
+	public void setChartConfig(ChartConfig chartConfig) {
+		this.chartConfig = chartConfig;
+	}
 
 	private void drawAxis(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
@@ -170,27 +171,27 @@ public class ChartPanel extends JPanel {
 		FontMetrics metrics = g.getFontMetrics();
 		String yLabel;
 		g.setColor(Color.black);
-		cal.setTimeInMillis((long) this.xMaxValue);
+		cal.setTimeInMillis((long) this.xMax);
 		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
 		transform.setToTranslation(borderInsets.left + xLength - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		cal.setTimeInMillis((long) ((this.xMaxValue - this.xMinValue) / 4 * 3 + this.xMinValue));
+		cal.setTimeInMillis((long) ((this.xMax - this.xMin) / 4 * 3 + this.xMin));
 		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
 		transform.setToTranslation(borderInsets.left + xLength / 4 * 3 - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		cal.setTimeInMillis((long) ((this.xMaxValue - this.xMinValue) / 2 + this.xMinValue));
+		cal.setTimeInMillis((long) ((this.xMax - this.xMin) / 2 + this.xMin));
 		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
 		transform.setToTranslation(borderInsets.left + xLength / 2 - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		cal.setTimeInMillis((long) ((this.xMaxValue - this.xMinValue) / 4 + this.xMinValue));
+		cal.setTimeInMillis((long) ((this.xMax - this.xMin) / 4 + this.xMin));
 		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
 		transform.setToTranslation(borderInsets.left + xLength / 4 - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		cal.setTimeInMillis((long) (this.xMinValue));
+		cal.setTimeInMillis((long) (this.xMin));
 		yLabel = String.valueOf(dateFormat.format(cal.getTime()));
 		transform.setToTranslation(borderInsets.left - metrics.stringWidth(yLabel) / 2, borderInsets.top + yLength + metrics.getHeight());
 		g2d.setTransform(transform);
@@ -207,27 +208,27 @@ public class ChartPanel extends JPanel {
 		String yLabel;
 		// draw y mark label
 		g.setColor(Color.red);
-		yLabel = String.valueOf(this.yMaxValue);
+		yLabel = String.valueOf(this.yMax);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf((this.yMaxValue - this.yMinValue) / 4 * 3 + this.yMinValue);
+		yLabel = String.valueOf((this.yMax - this.yMin) / 4 * 3 + this.yMin);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength / 4 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf((this.yMaxValue - this.yMinValue) / 2 + this.yMinValue);
+		yLabel = String.valueOf((this.yMax - this.yMin) / 2 + this.yMin);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength / 2 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf((this.yMaxValue - this.yMinValue) / 4 + this.yMinValue);
+		yLabel = String.valueOf((this.yMax - this.yMin) / 4 + this.yMin);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength / 4 * 3 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.yMinValue);
+		yLabel = String.valueOf(this.yMin);
 		transform.setToTranslation(borderInsets.left + metrics.getHeight(), borderInsets.top + yLength - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
@@ -252,39 +253,39 @@ public class ChartPanel extends JPanel {
 		AffineTransform transform = new AffineTransform();
 		String yLabel;
 		g.setColor(Color.blue);
-		yLabel = String.valueOf(this.xMaxCount);
+		yLabel = String.valueOf(this.frequencyMax);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf((this.xMaxCount - this.xMinCount) / 4 * 3 + this.xMinCount);
+		yLabel = String.valueOf((this.frequencyMax - this.frequencyMin) / 4 * 3 + this.frequencyMin);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength / 4 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf((this.xMaxCount - this.xMinCount) / 2 + this.xMinCount);
+		yLabel = String.valueOf((this.frequencyMax - this.frequencyMin) / 2 + this.frequencyMin);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength / 2 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf((this.xMaxCount - this.xMinCount) / 4 + this.xMinCount);
+		yLabel = String.valueOf((this.frequencyMax - this.frequencyMin) / 4 + this.frequencyMin);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength / 4 * 3 - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
-		yLabel = String.valueOf(this.xMinCount);
+		yLabel = String.valueOf(this.frequencyMin);
 		transform.setToTranslation(borderInsets.left - metrics.getHeight(), borderInsets.top + yLength - metrics.stringWidth(yLabel) / 2);
 		transform.rotate(Math.PI / 2);
 		g2d.setTransform(transform);
 		g.drawString(yLabel, 0, 0);
 	}
 
-	private void drawFrequencyData(Graphics g) {
+	private void drawFrequency(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		AffineTransform transform = new AffineTransform();
 		transform.setToTranslation(borderInsets.left, this.getHeight() - borderInsets.bottom);
 		g2d.setTransform(transform);
-		Object[] countArray = xCount.entrySet().toArray();
+		Object[] countArray = xMapFrequency.entrySet().toArray();
 		Arrays.sort(countArray, new Comparator<Object>() {
 			@SuppressWarnings("unchecked")
 			@Override
@@ -301,10 +302,10 @@ public class ChartPanel extends JPanel {
 		for (Object entry : countArray) {
 			@SuppressWarnings("unchecked")
 			double x = ((Entry<Double, Integer>) entry).getKey();
-			int pointX = (int) ((x - xMinValue) / (xMaxValue - xMinValue) * xAxisLength);
+			int pointX = (int) ((x - xMin) / (xMax - xMin) * xAxisLength);
 			@SuppressWarnings("unchecked")
 			int y = ((Entry<Double, Integer>) entry).getValue();
-			int pointY = -(int) ((y - xMinCount) / (xMaxCount - xMinCount) * yAxisLength);
+			int pointY = -(int) (1.0 * (y - frequencyMin) / (frequencyMax - frequencyMin) * yAxisLength);
 			int[] pointXs = new int[] { pointX, pointX + 1, pointX, pointX - 1 };
 			int[] pointYs = new int[] { pointY + 1, pointY, pointY - 1, pointY };
 			g2d.setComposite(acPoint);
@@ -316,7 +317,7 @@ public class ChartPanel extends JPanel {
 
 	}
 
-	private void drawYData(Graphics g) {
+	private void drawY(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		AffineTransform transform = new AffineTransform();
 		transform.setToTranslation(borderInsets.left, this.getHeight() - borderInsets.bottom);
@@ -326,22 +327,17 @@ public class ChartPanel extends JPanel {
 		g2d.setComposite(ac);
 		int xAxisLength = this.getWidth() - borderInsets.right - borderInsets.left;
 		int yAxisLength = this.getHeight() - borderInsets.bottom - borderInsets.top;
-		for (List<Double> points : result) {
+		for (List<Double> points : yList) {
 			double x = points.get(0);
-			int pointX = (int) ((x - xMinValue) / (xMaxValue - xMinValue) * xAxisLength);
+			int pointX = (int) ((x - xMin) / (xMax - xMin) * xAxisLength);
 			for (int i = 1; i < points.size(); i++) {
 				double y = points.get(i);
-				int pointY = -(int) ((y - yMinValue) / (yMaxValue - yMinValue) * yAxisLength);
+				int pointY = -(int) ((y - yMin) / (yMax - yMin) * yAxisLength);
 				int[] pointXs = new int[] { pointX, pointX + 1, pointX, pointX - 1 };
 				int[] pointYs = new int[] { pointY + 1, pointY, pointY - 1, pointY };
 				g2d.drawPolygon(pointXs, pointYs, 4);
-				g2d.fillPolygon(pointXs, pointYs, 4);
 			}
 		}
-	}
-
-	public void setChartConfig(ChartConfig chartConfig) {
-		this.chartConfig = chartConfig;
 	}
 
 }
