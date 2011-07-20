@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -299,6 +300,8 @@ public class ChartPanel extends JPanel {
 		AlphaComposite acPoint = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
 		AlphaComposite acLine = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
 		g2d.setColor(Color.blue);
+		GeneralPath line = new GeneralPath();
+		boolean lineStart = true;
 		for (Object entry : countArray) {
 			@SuppressWarnings("unchecked")
 			double x = ((Entry<Double, Integer>) entry).getKey();
@@ -312,7 +315,20 @@ public class ChartPanel extends JPanel {
 			g2d.drawPolygon(pointXs, pointYs, 4);
 			g2d.fillPolygon(pointXs, pointYs, 4);
 			g2d.setComposite(acLine);
-			g2d.drawLine(pointX, 0, pointX, pointY);
+			if (this.chartConfig.isDrawFrequencyLine()) {
+				if(lineStart) {
+					line.moveTo(pointX, pointY);
+					lineStart = false;
+				} else {
+					line.lineTo(pointX, pointY);
+				}
+			}
+			if (this.chartConfig.isDrawFrequencyHistogram()) {
+				g2d.drawLine(pointX, 0, pointX, pointY);
+			}
+		}
+		if (this.chartConfig.isDrawFrequencyLine()) {
+			g2d.draw(line);
 		}
 
 	}

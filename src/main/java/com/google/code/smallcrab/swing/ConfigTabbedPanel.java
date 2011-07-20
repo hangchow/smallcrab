@@ -3,11 +3,8 @@
  */
 package com.google.code.smallcrab.swing;
 
-import java.awt.Color;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.AbstractButton;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeListener;
 

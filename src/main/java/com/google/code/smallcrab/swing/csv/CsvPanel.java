@@ -37,19 +37,16 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 
 	private CsvChartConfigPanel chartConfigPanel;
 
-	private ItemListener frequencyCheckListener;
+	private ItemListener chartConfigListener;
 
-	public CsvPanel(ItemListener listener) {
+	public CsvPanel(ItemListener chartConfiglistener) {
 		super(new BorderLayout());
 		setName("csv");
-		this.frequencyCheckListener = listener;
+		this.chartConfigListener = chartConfiglistener;
 		this.dataSourceConfigPanel = new CsvDataSourceConfigPanel(new String[] { "column one", "column two", "column three" });
 		this.add(this.dataSourceConfigPanel, BorderLayout.NORTH);
 		this.chartConfigPanel = new CsvChartConfigPanel();
-		this.chartConfigPanel.setFrequencyListener(this.frequencyCheckListener);
-		this.chartConfigPanel.setFrequencyAverageListener(this.frequencyCheckListener);
-		this.chartConfigPanel.setYListener(this.frequencyCheckListener);
-		this.chartConfigPanel.setYAverageListener(this.frequencyCheckListener);
+		this.chartConfigPanel.setChartConfigListener(this.chartConfigListener);
 		this.add(this.chartConfigPanel, BorderLayout.SOUTH);
 	}
 
