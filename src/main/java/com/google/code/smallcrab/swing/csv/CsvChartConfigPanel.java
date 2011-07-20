@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import com.google.code.smallcrab.config.chart.ChartConfig;
-import com.google.code.smallcrab.swing.ControlPanel;
 
 /**
  * @author seanlinwang at gmail dot com
