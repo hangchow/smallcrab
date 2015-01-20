@@ -6,6 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 
+/**
+ * @author seanwang xalinx@gmail.com
+ *
+ */
 public class FileKit {
 
 	/**
@@ -14,23 +18,31 @@ public class FileKit {
 	 * @throws IOException
 	 */
 	public static long getLines(File file) {
+		if (file == null || !file.exists()) {
+			return 0;
+		}
 		int lines = 0;
-		LineNumberReader lrf = null;
 		long fileLength = file.length();
+		LineNumberReader lrf = null;
 		try {
 			lrf = new LineNumberReader(new FileReader(file));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			return 0;
 		}
 		if (lrf != null) {
 			try {
 				lrf.skip(fileLength);
+				lines = lrf.getLineNumber();
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new IllegalStateException(e);
+			} finally {
+				try {
+					lrf.close();
+				} catch (IOException e) {
+					throw new IllegalStateException(e);
+				}
 			}
-			lines = lrf.getLineNumber();
 		}
 		return lines;
 	}
-
 }

@@ -20,7 +20,7 @@ public class CsvDataSourceTable extends ConfigTable {
 	public void paintRow() {
 		super.paintRow();
 		TableColumn column = this.getColumnModel().getColumn(1);
-		TableCellEditor editor = new DefaultCellEditor(new JComboBox(CsvDataSourceTableModel.axises));
+		TableCellEditor editor = new DefaultCellEditor(new JComboBox<Object>(CsvDataSourceTableModel.axises));
 		column.setCellEditor(editor);
 	}
 

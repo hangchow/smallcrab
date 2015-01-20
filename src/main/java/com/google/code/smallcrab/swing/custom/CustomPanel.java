@@ -77,7 +77,7 @@ public class CustomPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatche
 
 	@Override
 	protected void notifyFileChange(File logFile) throws IOException {
-		
+
 	}
 
 	/*
@@ -123,11 +123,15 @@ public class CustomPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatche
 	public void initConfig(File file) throws IOException {
 		InputStream in = null;
 		String line = null;
+		BufferedReader br = null;
 		try {
 			in = new FileInputStream(file);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			br = new BufferedReader(new InputStreamReader(in));
 			line = br.readLine();
 		} finally {
+			if (br != null) {
+				br.close();
+			}
 			if (in != null) {
 				in.close();
 			}
@@ -136,7 +140,7 @@ public class CustomPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatche
 		data = new Object[lineOneSegs.length][2];
 		for (int i = 0; i < data.length; i++) {
 			data[i][0] = lineOneSegs[i];
-			JComboBox comboTypesList = new JComboBox(comboTypes);
+			JComboBox<String> comboTypesList = new JComboBox<String>(comboTypes);
 			data[i][1] = comboTypesList;
 			comboTypesList.setSelectedIndex(0);
 		}

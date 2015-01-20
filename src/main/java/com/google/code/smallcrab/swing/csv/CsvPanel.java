@@ -54,12 +54,16 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	public void notifyFileChange(File file) throws IOException {
 
 		InputStream in = null;
+		BufferedReader br = null;
 		String line = null;
 		try {
 			in = new FileInputStream(file);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			br = new BufferedReader(new InputStreamReader(in));
 			line = br.readLine();
 		} finally {
+			if (br != null) {
+				br.close();
+			}
 			if (in != null) {
 				in.close();
 			}
@@ -72,8 +76,7 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.google.code.smallcrab.swing.AnalyzeConfigPanel#resetConfigOutput()
+	 * @see com.google.code.smallcrab.swing.AnalyzeConfigPanel#resetConfigOutput()
 	 */
 	@Override
 	public void resetConfigOutput() {
@@ -112,9 +115,7 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.google.code.smallcrab.swing.AnalyzeConfigPanel#createFileLineAnalyzer
-	 * ()
+	 * @see com.google.code.smallcrab.swing.AnalyzeConfigPanel#createFileLineAnalyzer ()
 	 */
 	@Override
 	public FileLineAnalyzer createFileLineAnalyzer() {

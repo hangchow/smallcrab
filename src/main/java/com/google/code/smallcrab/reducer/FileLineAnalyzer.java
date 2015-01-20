@@ -268,10 +268,11 @@ public class FileLineAnalyzer implements FileAnalyzer {
 		println("starting " + analyzingThread.getName());
 		analyzingThread.start();
 		InputStream in = null;
+		BufferedReader br = null;
 		long start = System.currentTimeMillis();
 		try {
 			in = new FileInputStream(file);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			while ((strLine = br.readLine()) != null) {
 				if (linePool.size() == MAX_LINE_POOL_SIZE) {
@@ -289,6 +290,9 @@ public class FileLineAnalyzer implements FileAnalyzer {
 				}
 			}
 		} finally {
+			if (br != null) {
+				br.close();
+			}
 			if (in != null) {
 				in.close();
 			}
