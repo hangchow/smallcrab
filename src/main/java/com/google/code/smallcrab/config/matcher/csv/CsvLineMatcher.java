@@ -14,10 +14,10 @@ import com.google.code.smallcrab.protocol.csv.CsvPackage;
 public class CsvLineMatcher implements LineMatcher<CsvPackage> {
 
 	/* (non-Javadoc)
-	 * @see com.google.code.smallcrab.matcher.LineMatcher#match(com.google.code.smallcrab.scan.LineSpliter)
+	 * @see com.google.code.smallcrab.matcher.LineMatcher#match(com.google.code.smallcrab.scan.Linepac)
 	 */
 	@Override
-	public boolean match(CsvPackage spliter) {
+	public boolean match(CsvPackage pac) {
 		// TODO Auto-generated method stub
 		return false;
 	}

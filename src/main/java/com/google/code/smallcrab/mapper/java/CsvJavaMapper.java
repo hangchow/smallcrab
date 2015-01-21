@@ -18,9 +18,9 @@ public class CsvJavaMapper implements Mapper {
 	 */
 	@Override
 	public String[] map(String line) {
-		CsvPackage spliter = new CsvPackage();
-		spliter.split(line);
-		return spliter.getColumns();
+		CsvPackage pac = new CsvPackage();
+		pac.split(line);
+		return pac.getColumns();
 	}
 
 }

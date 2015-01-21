@@ -46,12 +46,12 @@ public class CustomPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatche
 		setName("csv");
 
 		JPanel optionPanel = new JPanel();
-		JLabel spliterLabel = new JLabel("spliter:");
-		spliterLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		JTextField spliterTF = new JTextField();
-		spliterTF.setText(",");
-		optionPanel.add(spliterLabel);
-		optionPanel.add(spliterTF);
+		JLabel pacLabel = new JLabel("pac:");
+		pacLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		JTextField pacTF = new JTextField();
+		pacTF.setText(",");
+		optionPanel.add(pacLabel);
+		optionPanel.add(pacTF);
 		add(optionPanel, SwingKit.createVerticalGridBagConstraint(0, 0));
 
 		JLabel oneLabel = new JLabel("preproccess:");

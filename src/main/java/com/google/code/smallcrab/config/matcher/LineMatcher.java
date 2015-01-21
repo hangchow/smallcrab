@@ -12,10 +12,10 @@ import com.google.code.smallcrab.protocol.LinePackege;
 public interface LineMatcher<L extends LinePackege> {
 
 	/**
-	 * @param spliter
+	 * @param pac
 	 * @param segs
 	 * @return
 	 */
-	boolean match(L spliter);
+	boolean match(L pac);
 
 }

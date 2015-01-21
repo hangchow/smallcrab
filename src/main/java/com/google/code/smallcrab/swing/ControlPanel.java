@@ -173,11 +173,11 @@ public class ControlPanel extends JPanel implements ActionListener {
 			taskOutput.append("= Size:" + totalLength + "bytes\n");
 		}
 
-		private void outputResultHeader(FileAnalyzer ala, final long totalLength, final AnalyzeCallback ac) {
-			taskOutput.append("= totalLines:" + ac.getTotalLines() + "\n");
-			taskOutput.append("= invalidLines:" + ac.getInvalidLines() + "\n");
-			taskOutput.append("= Consuming:" + ala.getAnalyzePeriod() + "ms\n");
-			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / ala.getAnalyzePeriod() * 1000 + "M/S\n");
+		private void outputResultHeader(final FileAnalyzer fl, final long totalLength, final AnalyzeCallback ac) {
+			taskOutput.append("= TotalLines:" + ac.getTotalLines() + "\n");
+			taskOutput.append("= InvalidLines:" + ac.getInvalidLines() + "\n");
+			taskOutput.append("= Consuming:" + fl.getAnalyzePeriod() + "ms\n");
+			taskOutput.append("= Speed:" + totalLength / 1024.0 / 1024 / fl.getAnalyzePeriod() * 1000 + "M/S\n");
 			taskOutput.append("===============================================\n");
 		}
 

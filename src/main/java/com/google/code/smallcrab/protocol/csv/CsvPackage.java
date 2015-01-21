@@ -17,7 +17,7 @@ public class CsvPackage implements LinePackege {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.google.code.smallcrab.scan.LineSpliter#split(java.lang.String)
+	 * @see com.google.code.smallcrab.scan.Linepac#split(java.lang.String)
 	 */
 	@Override
 	public void split(String line) {

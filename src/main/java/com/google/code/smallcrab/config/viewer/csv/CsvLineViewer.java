@@ -46,11 +46,11 @@ public class CsvLineViewer implements LineViewer<CsvPackage> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.google.code.smallcrab.viewer.LineViewer#view(com.google.code.smallcrab.scan.LineSpliter)
+	 * @see com.google.code.smallcrab.viewer.LineViewer#view(com.google.code.smallcrab.scan.Linepac)
 	 */
 	@Override
-	public String view(CsvPackage spliter) {
-		return spliter.column(columnIndex);
+	public String view(CsvPackage pac) {
+		return pac.column(columnIndex);
 	}
 
 }

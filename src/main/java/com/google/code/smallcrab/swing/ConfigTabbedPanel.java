@@ -8,7 +8,7 @@ import java.awt.event.ItemListener;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeListener;
 
-import com.google.code.smallcrab.swing.apache.ApachePanel;
+import com.google.code.smallcrab.swing.accesslog.ALPanel;
 import com.google.code.smallcrab.swing.csv.CsvPanel;
 
 /**
@@ -21,11 +21,12 @@ public class ConfigTabbedPanel extends JTabbedPane {
 
 	public ConfigTabbedPanel(ChangeListener changeListener, ItemListener frequencyListener) {
 		super();
+
+		ALPanel apacheLogPanel = new ALPanel();
+		add(apacheLogPanel);
+
 		CsvPanel csvPanel = new CsvPanel(frequencyListener);
 		add(csvPanel);
-
-		ApachePanel apacheLogPanel = new ApachePanel();
-		add(apacheLogPanel);
 
 		setSelectedIndex(0);
 		addChangeListener(changeListener);

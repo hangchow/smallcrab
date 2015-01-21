@@ -13,10 +13,10 @@ import com.google.code.smallcrab.protocol.LinePackege;
 public interface LineViewer<L extends LinePackege> {
 
 	/**
-	 * View segment from line using spliter.
-	 * @param spliter
+	 * View segment from line using pac.
+	 * @param pac
 	 * 
 	 * @return seg
 	 */
-	String view(L spliter);
+	String view(L pac);
 }

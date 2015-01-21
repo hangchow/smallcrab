@@ -55,14 +55,14 @@ public class CsvXYSplotsMapper implements Mapper {
 	 */
 	@Override
 	public String[] map(String line) {
-		CsvPackage spliter = new CsvPackage();
-		spliter.split(line);
+		CsvPackage pac = new CsvPackage();
+		pac.split(line);
 		String[] result = new String[yAxislineViewers.size() + 1];
 		int index = 1;
 		for (CsvLineViewer lineViewer : yAxislineViewers) {
-			result[index++] = lineViewer.view(spliter);
+			result[index++] = lineViewer.view(pac);
 		}
-		result[0] = xAxisLineViewr.view(spliter);
+		result[0] = xAxisLineViewr.view(pac);
 		return result;
 	}
 
