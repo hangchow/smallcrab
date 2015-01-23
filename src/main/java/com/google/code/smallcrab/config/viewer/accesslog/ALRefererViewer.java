@@ -9,19 +9,19 @@ import com.google.code.smallcrab.protocol.accesslog.ALPackage;
  * @author xalinx at gmail dot com
  * @date Dec 31, 2010
  */
-public class ALReferrerViewer extends AbstractContainALViewer {
+public class ALRefererViewer extends AbstractContainALViewer {
 
 	/**
 	 * 
 	 */
-	public ALReferrerViewer() {
+	public ALRefererViewer() {
 		super();
 	}
 
 	/**
 	 * @param contain
 	 */
-	public ALReferrerViewer(String contain) {
+	public ALRefererViewer(String contain) {
 		super(contain);
 	}
 

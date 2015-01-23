@@ -155,11 +155,9 @@ public class CsvPanel extends AnalyzeConfigPanel<CsvLineViewer, CsvLineMatcher> 
 			boolean used = (Boolean) viewModel.getValueAt(rowIndex, 2);
 			if (used) {
 				String axisSelect = (String) viewModel.getValueAt(rowIndex, 1);
-				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x
-																			// axis
+				if (axisSelect.equals(CsvDataSourceTableModel.axises[1])) { // x axis
 					xAxisCount++;
-				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) {// y
-																					// axis
+				} else if (axisSelect.equals(CsvDataSourceTableModel.axises[2])) { // y axis
 					yAxisCount++;
 				}
 			}

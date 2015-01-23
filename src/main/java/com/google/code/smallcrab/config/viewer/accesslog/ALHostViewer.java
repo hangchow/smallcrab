@@ -32,7 +32,7 @@ public class ALHostViewer extends AbstractContainALViewer {
 	 */
 	@Override
 	protected String getAllView(ALPackage pac) {
-		return pac.getIP();
+		return pac.getHost();
 	}
 
 }

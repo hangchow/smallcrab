@@ -32,7 +32,7 @@ public class ALDomainMatcher extends AbstractContainALMatcher {
 	 */
 	@Override
 	protected String getAllView(ALPackage pac) {
-		return pac.getDomain();
+		return pac.getHost();
 	}
 
 }

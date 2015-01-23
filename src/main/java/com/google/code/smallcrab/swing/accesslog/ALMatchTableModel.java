@@ -8,7 +8,7 @@ package com.google.code.smallcrab.swing.accesslog;
  * @date Dec 31, 2010
  */
 public class ALMatchTableModel extends ALViewTableModel {
-	private final Object[][] data = { { DOMAIN, "", false }, { QUERY, "", false }, { PATH, "", false }, { REFERRER, "", false }, { CODE, "", false }, { METHOD, "", false }, { AGENT, "", false }, { IP, "", false } };
+	private final Object[][] data = { { HOST, "", false }, { QUERY, "", false }, { PATH, "", false }, { REFERER, "", false }, { STATUS, "", false }, { METHOD, "", false }, { AGENT, "", false }, { IP, "", false } };
 
 	/**
 	 * 

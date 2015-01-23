@@ -32,7 +32,7 @@ public class ALCodeMatcher extends AbstractContainALMatcher {
 	 */
 	@Override
 	protected String getAllView(ALPackage pac) {
-		return pac.getCode();
+		return pac.getStatus();
 	}
 
 }

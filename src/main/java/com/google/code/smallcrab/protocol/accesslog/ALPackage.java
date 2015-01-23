@@ -21,7 +21,9 @@ public class ALPackage implements LinePackege {
 
 	private String query;
 
-	private String domain;
+	private String request;
+
+	private String host;
 
 	/*
 	 * @notthreadsafe
@@ -39,7 +41,7 @@ public class ALPackage implements LinePackege {
 	 */
 	public String getQuery() {
 		if (query == null) {
-			query = UrlKit.extractQuery(segs.get("request"));
+			query = UrlKit.extractQuery(getRequest());
 		}
 		return query;
 	}
@@ -49,7 +51,12 @@ public class ALPackage implements LinePackege {
 	 */
 	public String getPath() {
 		if (path == null) {
-			path = UrlKit.extractPath(segs.get("request"));
+			String request = getRequest();
+			int end = request.indexOf('?');
+			if (end < 0) {
+				end = request.length();
+			}
+			path = request.substring(0, end);
 		}
 		return path;
 	}
@@ -57,11 +64,11 @@ public class ALPackage implements LinePackege {
 	/**
 	 * @return
 	 */
-	public String getDomain() {
-		if (domain == null) {
-			domain = UrlKit.extractDomain(segs.get("request"));
+	public String getHost() {
+		if (host == null) {
+			host = segs.get("host");
 		}
-		return domain;
+		return host;
 	}
 
 	/**
@@ -96,13 +103,16 @@ public class ALPackage implements LinePackege {
 	 * @return request url
 	 */
 	public String getRequest() {
-		return segs.get("request");
+		if (request == null) {
+			request = segs.get("request");
+		}
+		return request;
 	}
 
 	/**
 	 * @return response code
 	 */
-	public String getCode() {
+	public String getStatus() {
 		return segs.get("status");
 	}
 

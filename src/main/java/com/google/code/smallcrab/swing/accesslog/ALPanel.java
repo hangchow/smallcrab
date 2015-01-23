@@ -5,13 +5,13 @@ package com.google.code.smallcrab.swing.accesslog;
 
 import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.AGENT;
 import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.ALL;
-import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.CODE;
-import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.DOMAIN;
+import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.STATUS;
+import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.HOST;
 import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.IP;
 import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.METHOD;
 import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.PATH;
 import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.QUERY;
-import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.REFERRER;
+import static com.google.code.smallcrab.swing.accesslog.ALConfigTableModel.REFERER;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -41,13 +41,13 @@ import com.google.code.smallcrab.config.matcher.accesslog.ALReferrerMatcher;
 import com.google.code.smallcrab.config.viewer.accesslog.ALAgentViewer;
 import com.google.code.smallcrab.config.viewer.accesslog.ALAllViewer;
 import com.google.code.smallcrab.config.viewer.accesslog.ALCodeViewer;
-import com.google.code.smallcrab.config.viewer.accesslog.ALDomainViewer;
+import com.google.code.smallcrab.config.viewer.accesslog.ALHostViewer;
 import com.google.code.smallcrab.config.viewer.accesslog.ALIPViewer;
 import com.google.code.smallcrab.config.viewer.accesslog.ALLineViewer;
 import com.google.code.smallcrab.config.viewer.accesslog.ALMethodViewer;
 import com.google.code.smallcrab.config.viewer.accesslog.ALPathViewer;
 import com.google.code.smallcrab.config.viewer.accesslog.ALQueryViewer;
-import com.google.code.smallcrab.config.viewer.accesslog.ALReferrerViewer;
+import com.google.code.smallcrab.config.viewer.accesslog.ALRefererViewer;
 import com.google.code.smallcrab.mapper.accesslog.ALCountMapper;
 import com.google.code.smallcrab.reducer.FileLineAnalyzer;
 import com.google.code.smallcrab.swing.AnalyzeConfigPanel;
@@ -141,15 +141,15 @@ public class ALPanel extends AnalyzeConfigPanel<ALLineViewer, ALLineMatcher> {
 				continue;
 			}
 			ALLineViewer viewer = null;
-			if (DOMAIN.equals(option)) {
-				viewer = new ALDomainViewer(value);
+			if (HOST.equals(option)) {
+				viewer = new ALHostViewer(value);
 			} else if (QUERY.equals(option)) {
 				viewer = new ALQueryViewer(value);
 			} else if (PATH.equals(option)) {
 				viewer = new ALPathViewer(value);
-			} else if (REFERRER.equals(option)) {
-				viewer = new ALReferrerViewer(value);
-			} else if (CODE.equals(option)) {
+			} else if (REFERER.equals(option)) {
+				viewer = new ALRefererViewer(value);
+			} else if (STATUS.equals(option)) {
 				viewer = new ALCodeViewer(value);
 			} else if (METHOD.equals(option)) {
 				viewer = new ALMethodViewer(value);
@@ -176,16 +176,16 @@ public class ALPanel extends AnalyzeConfigPanel<ALLineViewer, ALLineMatcher> {
 				continue;
 			}
 			ALLineMatcher matcher = null;
-			if (DOMAIN.equals(option)) {
+			if (HOST.equals(option)) {
 				matcher = new ALDomainMatcher(value);
 			} else if (QUERY.equals(option)) {
 				String[] kv = StringKit.split(value, '=');
 				matcher = new ALQueryMatcher(kv[0], kv[1]);
 			} else if (PATH.equals(option)) {
 				matcher = new ALPathMatcher(value);
-			} else if (REFERRER.equals(option)) {
+			} else if (REFERER.equals(option)) {
 				matcher = new ALReferrerMatcher(value);
-			} else if (CODE.equals(option)) {
+			} else if (STATUS.equals(option)) {
 				matcher = new ALCodeMatcher(value);
 			} else if (METHOD.equals(option)) {
 				matcher = new ALMethodMatcher(value);
@@ -254,11 +254,11 @@ public class ALPanel extends AnalyzeConfigPanel<ALLineViewer, ALLineMatcher> {
 			boolean checked = (Boolean) viewModel.getValueAt(rowIndex, 2);
 			if (checked)
 				checkedNum++;
-			if (DOMAIN.equals(option)) {
+			if (HOST.equals(option)) {
 			} else if (QUERY.equals(option)) {
 			} else if (PATH.equals(option)) {
-			} else if (REFERRER.equals(option)) {
-			} else if (CODE.equals(option)) {
+			} else if (REFERER.equals(option)) {
+			} else if (STATUS.equals(option)) {
 			} else if (METHOD.equals(option)) {
 			} else if (AGENT.equals(option)) {
 			} else if (IP.equals(option)) {
@@ -285,7 +285,7 @@ public class ALPanel extends AnalyzeConfigPanel<ALLineViewer, ALLineMatcher> {
 				outputMatchConfigError(option, value);
 				return false;
 			}
-			if (DOMAIN.equals(option)) {
+			if (HOST.equals(option)) {
 			} else if (QUERY.equals(option)) {
 				String[] kv = StringKit.split(value, '=');
 				if (kv.length != 2) {
@@ -293,8 +293,8 @@ public class ALPanel extends AnalyzeConfigPanel<ALLineViewer, ALLineMatcher> {
 					return false;
 				}
 			} else if (PATH.equals(option)) {
-			} else if (REFERRER.equals(option)) {
-			} else if (CODE.equals(option)) {
+			} else if (REFERER.equals(option)) {
+			} else if (STATUS.equals(option)) {
 			} else if (METHOD.equals(option)) {
 			} else if (AGENT.equals(option)) {
 			} else if (IP.equals(option)) {

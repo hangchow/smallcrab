@@ -14,7 +14,7 @@ public class ALViewTableModel extends ALConfigTableModel implements TableModelLi
 
 	private static final long serialVersionUID = 1088594001477114033L;
 	private final String[] header = new String[] { "option", "value", "show" };
-	private final Object[][] data = { { DOMAIN, "", false }, { QUERY, "", false }, { PATH, "", false }, { REFERRER, "", false }, { CODE, "", false }, { METHOD, "", false }, { AGENT, "", false }, { IP, "", false }, { ALL, "", false } };
+	private final Object[][] data = { { HOST, "", false }, { QUERY, "", false }, { PATH, "", false }, { REFERER, "", false }, { STATUS, "", false }, { METHOD, "", false }, { AGENT, "", false }, { IP, "", false }, { ALL, "", false } };
 
 	/*
 	 * (non-Javadoc)

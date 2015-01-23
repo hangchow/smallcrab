@@ -19,7 +19,7 @@ public abstract class ALConfigTableModel extends AbstractTableModel implements T
 	/**
 	 * 
 	 */
-	public static final String DOMAIN = "domain";
+	public static final String HOST = "host";
 	
 	/**
 	 * 
@@ -34,12 +34,12 @@ public abstract class ALConfigTableModel extends AbstractTableModel implements T
 	/**
 	 * 
 	 */
-	public static final String REFERRER = "referrer";
+	public static final String REFERER = "referer";
 
 	/**
 	 * 
 	 */
-	public static final String CODE = "code";
+	public static final String STATUS = "status";
 
 	/**
 	 * 

@@ -54,7 +54,7 @@ public class ALHelper {
 		// code
 		start = end + 2;
 		end = line.indexOf(SEPARATOR_CHAR, start);
-		buildSplits(line, segs, "code", start, end);
+		buildSplits(line, segs, "status", start, end);
 		
 		// size
 		start = end + 1;
@@ -72,12 +72,9 @@ public class ALHelper {
 		buildSplits(line, segs, "agent", start, end);
 		
 		// host
-		start = end + 1; // ' "'
+		start = end + 2; // ' "'
 		end = line.indexOf(SEPARATOR_CHAR, start);
 		buildSplits(line, segs, "host", start, end);
-		
-		start = end + 1; // ' "'
-		end = line.indexOf(SEPARATOR_CHAR, start);
 		
 		start = end + 1; // ' "'
 		end = line.indexOf(SEPARATOR_CHAR, start);
