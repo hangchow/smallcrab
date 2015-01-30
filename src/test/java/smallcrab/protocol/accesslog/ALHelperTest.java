@@ -47,4 +47,13 @@ public class ALHelperTest {
 		assertEquals("134", segs.get("size"));
 		assertEquals("Mozilla/4.0",segs.get("agent"));
 	}
+	
+	@Test
+	public void testSpecialSplit() {
+		String log = "123.103.8.119 - 10.11.110.60, 10.11.110.60, 221.207.14.153 [19/Jan/2015:00:11:16 +0800] \"GET" +
+				" /timestamp.php HTTP/1.1\"" +
+				" 200 38 \"-\" \"-\" in.itugo.com - - - - - - 0.000";
+		Map<String, String> segs = ALHelper.defaultSplit(log);
+		assertEquals("10.11.110.60, 10.11.110.60, 221.207.14.153 ", segs.get("forward"));
+	}
 }

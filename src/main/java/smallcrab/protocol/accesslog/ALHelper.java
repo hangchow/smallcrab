@@ -29,11 +29,14 @@ public class ALHelper {
 		
 		start = end + 1;
 		end = line.indexOf(SEPARATOR_CHAR, start);
-		start = end + 1;
-		end = line.indexOf(SEPARATOR_CHAR, start);
 		
+	     // forward
+        start = end + 1;
+        end = line.indexOf('[', start);
+        buildSplits(line, segs, "forward", start, end);
+
 		// time
-		start = end + 2;// ' ['
+		start = end + 1;// ' ['
 		end = line.indexOf(']', start);
 		buildSplits(line, segs, "time", start, end);
 		
