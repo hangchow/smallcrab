@@ -156,12 +156,8 @@ public class UrlKit {
 		return getParameterMapFromQuery(url, encoding);
 	}
 
-	public static Map<String, String> getParameterMapFromQuery(String query) {
-		try {
-			return getParameterMapFromQuery(query, UTF8);
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException(e);
-		}
+	public static Map<String, String> getParameterMapFromQuery(String query) throws UnsupportedEncodingException {
+		return getParameterMapFromQuery(query, UTF8);
 	}
 
 	public static Map<String, String> getParameterMapFromQuery(String query, String encoding) throws UnsupportedEncodingException {
