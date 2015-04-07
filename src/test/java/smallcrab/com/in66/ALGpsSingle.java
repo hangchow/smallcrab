@@ -48,7 +48,7 @@ public class ALGpsSingle {
 	}
 
 	public static void main(String[] args) throws IOException {
-		ALGpsSingle merge = new ALGpsSingle();
+		ALGpsSingle single = new ALGpsSingle();
 		LineNumberReader reader = null;
 		String readFilename = args[0];
 		String writeFilename = args[1];
@@ -61,7 +61,7 @@ public class ALGpsSingle {
 			try {
 				ALPackage alp = new ALPackage();
 				alp.split(line);
-				merge.merge(alp, token);
+				single.merge(alp, token);
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println(line);
@@ -75,7 +75,7 @@ public class ALGpsSingle {
 		reader.close();
 
 		FileWriter fw = new FileWriter(writeFilename);
-		merge.write(fw);
+		single.write(fw);
 		fw.close();
 	}
 
