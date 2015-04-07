@@ -25,10 +25,9 @@ import smallcrab.utils.UrlKit;
 public class ALGpsNearHourMerge {
 	Map<String, String> store = new LinkedHashMap<String, String>(320 * 1024);
 
-	DateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.US);
-	Calendar calendar = GregorianCalendar.getInstance();
+	
 
-	public void merge(ALPackage pac, double destLong, double destLat, double distance) throws UnsupportedEncodingException, ParseException {
+	public void merge(ALPackage pac, int hour, double destLong, double destLat, double distance) throws UnsupportedEncodingException, ParseException {
 		Map<String, String> param = null;
 		String query = pac.getQuery();
 		param = UrlKit.getParameterMapFromQuery(query);
@@ -46,12 +45,7 @@ public class ALGpsNearHourMerge {
 				latitude = gpsArr[1];
 				if (StringKit.isNotEmpty(privateKey) && StringKit.isNotEmpty(longitude) && StringKit.isNotEmpty(latitude)) {
 					if (GpsKit.getDistance(destLat, destLong, Double.valueOf(latitude), Double.valueOf(longitude)) <= distance) {
-						Date date = df.parse(pac.getTime());
-						calendar.setTime(date);
-						int hour = calendar.get(Calendar.HOUR_OF_DAY);
-						if (hour > 6 && hour < 8) {
 							store.put(hour + ":" + privateKey, privateKey + " " + pac.getTime() + " " + longitude + " " + latitude);
-						}
 					}
 				}
 			}
@@ -73,14 +67,28 @@ public class ALGpsNearHourMerge {
 		double longitude = Double.valueOf(args[2]);
 		double latitude = Double.valueOf(args[3]);
 		double distance = Double.valueOf(args[4]);
-
+		
+		int startHour = Integer.valueOf(args[5]);
+		int endHour = Integer.valueOf(args[6]);
+		
+		DateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.US);
+		Calendar calendar = GregorianCalendar.getInstance();
+		
 		String line;
 		int i = 0;
 		while ((line = reader.readLine()) != null) {
 			try {
 				ALPackage alp = new ALPackage();
 				alp.split(line);
-				near.merge(alp, longitude, latitude, distance);
+				
+				Date date = df.parse(alp.getTime());
+				calendar.setTime(date);
+				int hour = calendar.get(Calendar.HOUR_OF_DAY);
+				if (hour >= startHour && hour <= endHour) {
+					near.merge(alp, hour, longitude, latitude, distance);
+				} else if (hour > endHour) {
+					break;
+				}
 			} catch (Exception e) {
 				System.out.println(line);
 			}
