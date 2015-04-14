@@ -41,8 +41,7 @@ public class GetAliyunAddressMapper {
 		return "error";
 	}
 
-	// aliyun address
-	public static String getAddress(String lon, String lat) throws IOException, InterruptedException {
+	public static String[] getAddress(String lon, String lat) throws IOException, InterruptedException {
 		String path = aliyun_interface + lat + ',' + lon;
 		String res = getHttpResult(path);
 		int j = 0;
@@ -50,34 +49,38 @@ public class GetAliyunAddressMapper {
 			res = getHttpResult(path);
 			j++;
 		}
-		String address = getAddress(res);
-		return address;
-	}
-
-	public static String getAddress(String res) {
-		JSONObject dataJson;
-		String[] locaList;
+		String[] address = null;
 		try {
-			dataJson = new JSONObject(res);
-			JSONArray datalist = dataJson.getJSONArray("addrList");
-			JSONObject data = datalist.getJSONObject(1);
-			String admName = data.get("admName").toString();
-			locaList = admName.split(",");
-			System.out.println(admName);
-
-			System.out.println(locaList.length);
-			if (locaList.length == 2) {
-				admName = locaList[0] + "," + locaList[0] + "," + locaList[1];
-			} else if (locaList.length == 1) {
-				admName = locaList[0] + "," + locaList[0] + "," + locaList[0];
-			} else if (locaList.length >= 3) {
-				admName = locaList[0] + "," + locaList[1] + "," + locaList[2];
-			}
-			return admName;
-
+			address = getAddress(res);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return "error";
+		return address;
+	}
+
+	public static String[] getAddress(String res) throws JSONException {
+		JSONObject dataJson;
+		String[] locaList;
+		dataJson = new JSONObject(res);
+		JSONArray datalist = dataJson.getJSONArray("addrList");
+		JSONObject data = datalist.getJSONObject(1);
+		String admName = data.get("admName").toString();
+		locaList = admName.split(",");
+		String[] result = new String[3];
+		if (locaList.length == 2) {
+			result[0] = locaList[0];
+			result[1] = locaList[1];
+			result[2] = locaList[1];
+		} else if (locaList.length == 1) {
+			result[0] = locaList[0];
+			result[1] = locaList[0];
+			result[2] = locaList[0];
+		} else if (locaList.length >= 3) {
+			result[0] = locaList[0];
+			result[1] = locaList[1];
+			result[2] = locaList[2];
+		}
+		return result;
+
 	}
 }
