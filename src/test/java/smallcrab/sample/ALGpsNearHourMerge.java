@@ -1,4 +1,4 @@
-package smallcrab.com.in66;
+package smallcrab.sample;
 
 import java.io.FileReader;
 import java.io.FileWriter;

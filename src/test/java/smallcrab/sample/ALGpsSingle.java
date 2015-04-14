@@ -1,22 +1,22 @@
-package smallcrab.com.in66;
+package smallcrab.sample;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import smallcrab.protocol.accesslog.ALPackage;
 import smallcrab.utils.StringKit;
 import smallcrab.utils.UrlKit;
 
-public class ALGpsMerger {
-	Map<String, String> store = new HashMap<String, String>(320 * 1024);
+public class ALGpsSingle {
+	List<String> store = new ArrayList<String>();
 
-	public void merge(ALPackage pac) throws UnsupportedEncodingException {
+	public void merge(ALPackage pac, String token) throws UnsupportedEncodingException {
 		Map<String, String> param = null;
 		String query = pac.getQuery();
 		param = UrlKit.getParameterMapFromQuery(query);
@@ -32,24 +32,28 @@ public class ALGpsMerger {
 			if (gpsArr != null && gpsArr.length == 2) {
 				longitude = gpsArr[0];
 				latitude = gpsArr[1];
-				if (StringKit.isNotEmpty(privateKey) && StringKit.isNotEmpty(longitude) && StringKit.isNotEmpty(latitude)) {
-					store.put(privateKey, longitude + "," + latitude);
+				if (StringKit.isNotEmpty(privateKey) && privateKey.equals(token)) {
+					if (StringKit.isNotEmpty(longitude) && StringKit.isNotEmpty(latitude)) {
+						store.add(token + " " + pac.getTime()+ " " + longitude + " " + latitude);
+					}
 				}
 			}
 		}
 	}
 
 	public void write(Writer writer) throws IOException {
-		for (Entry<String, String> entry : store.entrySet()) {
-			writer.write(entry.getKey() + "," + entry.getValue() + "\n");
+		for (String entry : store) {
+			writer.write(entry + "\n");
 		}
-		writer.close();
 	}
 
 	public static void main(String[] args) throws IOException {
-		ALGpsMerger merge = new ALGpsMerger();
+		ALGpsSingle single = new ALGpsSingle();
 		LineNumberReader reader = null;
-		reader = new LineNumberReader(new FileReader(args[0]));
+		String readFilename = args[0];
+		String writeFilename = args[1];
+		String token = args[2];
+		reader = new LineNumberReader(new FileReader(readFilename));
 
 		String line;
 		int i = 0;
@@ -57,7 +61,7 @@ public class ALGpsMerger {
 			try {
 				ALPackage alp = new ALPackage();
 				alp.split(line);
-				merge.merge(alp);
+				single.merge(alp, token);
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println(line);
@@ -70,15 +74,9 @@ public class ALGpsMerger {
 
 		reader.close();
 
-		System.out.println("entry size: " + merge.getSize());
-
-		FileWriter fw = new FileWriter(args[1]);
-		merge.write(fw);
-
-	}
-
-	private int getSize() {
-		return this.store.size();
+		FileWriter fw = new FileWriter(writeFilename);
+		single.write(fw);
+		fw.close();
 	}
 
 }
