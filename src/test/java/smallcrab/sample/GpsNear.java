@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Logger;
-
-import javax.sound.sampled.Line;
 
 import smallcrab.protocol.accesslog.ALPackage;
 import smallcrab.utils.StringKit;
@@ -28,6 +28,7 @@ import smallcrab.utils.UrlKit;
  */
 public class GpsNear {
 	private static class Loc {
+		String file;
 		double longitude;
 		double latitude;
 	}
@@ -49,8 +50,12 @@ public class GpsNear {
 	}
 
 	List<String> store = new ArrayList<String>();
-
-	public void merge(ALPackage pac, List<Loc> locations, double distance) throws UnsupportedEncodingException {
+	
+	
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
+	public static Map<String,FileWriter> fileMap = new HashMap<String, FileWriter>();
+	
+	public void merge(ALPackage pac, List<Loc> locations, double distance) throws UnsupportedEncodingException, ParseException {
 		Map<String, String> param = null;
 		String query = pac.getQuery();
 		param = UrlKit.getParameterMapFromQuery(query);
@@ -59,7 +64,7 @@ public class GpsNear {
 		}
 		String privateKey = param.get("_token");
 		String gps = param.get("action_gps");
-		String time = pac.getTime();
+		long time = simpleDateFormat.parse(pac.getTime()).getTime();
 		String longitude = null;
 		String latitude = null;
 		if (StringKit.isNotEmpty(gps)) {
@@ -73,6 +78,11 @@ public class GpsNear {
 						double destLat = loc.latitude;
 						if (getDistance(destLat, destLong, Double.valueOf(latitude), Double.valueOf(longitude)) <= distance) {
 							store.add(privateKey + "," + longitude + "," + latitude + "," + time + "," + pac.getPath());
+							try {
+								fileMap.get(loc.file).write(privateKey + "," + longitude + "," + latitude + "," + time + "," + pac.getPath()+"\n");
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -89,13 +99,13 @@ public class GpsNear {
 
 	/**
 	 * @param args
-	 *            log file,out file, target gps file, distance
+	 *            log file,target gps file, distance
 	 * 
 	 *            gps file:
 	 * 
 	 *            <code>
-	 * 				120.112779,30.305883
-	 *              120.112779,30.305883
+	 * 				120.112779,30.305883,file_out
+	 *              120.112779,30.305883,file_out
 	 *            </code>
 	 * @throws IOException
 	 */
@@ -105,7 +115,7 @@ public class GpsNear {
 		reader = new LineNumberReader(new FileReader(args[0]));
 		
 		LineNumberReader configReader = null;
-		configReader = new LineNumberReader(new FileReader(args[2]));
+		configReader = new LineNumberReader(new FileReader(args[1]));
 		
 		List<Loc> locs = new ArrayList<GpsNear.Loc>();
 		String configLine = null;
@@ -114,13 +124,15 @@ public class GpsNear {
 			Loc loc = new Loc();
 			loc.longitude = Double.valueOf(lineString[0]);
 			loc.latitude = Double.valueOf(lineString[1]);
-			System.out.println(loc.latitude+"dfgfsd"+loc.longitude);
+			loc.file = lineString[2];
+			System.out.println(loc.latitude+":"+loc.longitude);
+			fileMap.put(loc.file, new FileWriter(loc.file));
 			locs.add(loc);
 		}
 		
 //		double longitude = Double.valueOf(args[2]);
 //		double latitude = Double.valueOf(args[3]);
-		double distance = Double.valueOf(args[3]);
+		double distance = Double.valueOf(args[2]);
 
 		String line;
 		int i = 0;
@@ -140,11 +152,16 @@ public class GpsNear {
 		}
 
 		reader.close();
+			
+		for (int j = 0; j < locs.size(); j++) {
+			fileMap.get(locs.get(j).file).close();
+		}
+		System.out.println("complete");
+//		FileWriter fw = new FileWriter(args[1]);
+//		merge.write(fw,locs.get(j).file);
+//		System.out.println("entry size: " + merge.getSize());
 
-		System.out.println("entry size: " + merge.getSize());
-
-		FileWriter fw = new FileWriter(args[1]);
-		merge.write(fw);
+		
 
 	}
 
