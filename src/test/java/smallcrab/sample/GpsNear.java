@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
+
+import javax.sound.sampled.Line;
 
 import smallcrab.protocol.accesslog.ALPackage;
 import smallcrab.utils.StringKit;
@@ -86,7 +89,7 @@ public class GpsNear {
 
 	/**
 	 * @param args
-	 *            log file, target gps file, distance
+	 *            log file,out file, target gps file, distance
 	 * 
 	 *            gps file:
 	 * 
@@ -100,10 +103,24 @@ public class GpsNear {
 		GpsNear merge = new GpsNear();
 		LineNumberReader reader = null;
 		reader = new LineNumberReader(new FileReader(args[0]));
-
-		double longitude = Double.valueOf(args[2]);
-		double latitude = Double.valueOf(args[3]);
-		double distance = Double.valueOf(args[4]);
+		
+		LineNumberReader configReader = null;
+		configReader = new LineNumberReader(new FileReader(args[2]));
+		
+		List<Loc> locs = new ArrayList<GpsNear.Loc>();
+		String configLine = null;
+		while ((configLine = configReader.readLine()) != null) {
+			String[] lineString = configLine.split(",");
+			Loc loc = new Loc();
+			loc.longitude = Double.valueOf(lineString[0]);
+			loc.latitude = Double.valueOf(lineString[1]);
+			System.out.println(loc.latitude+"dfgfsd"+loc.longitude);
+			locs.add(loc);
+		}
+		
+//		double longitude = Double.valueOf(args[2]);
+//		double latitude = Double.valueOf(args[3]);
+		double distance = Double.valueOf(args[3]);
 
 		String line;
 		int i = 0;
@@ -111,7 +128,7 @@ public class GpsNear {
 			try {
 				ALPackage alp = new ALPackage();
 				alp.split(line);
-				merge.merge(alp, longitude, latitude, distance);
+				merge.merge(alp, locs, distance);
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println(line);
