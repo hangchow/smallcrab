@@ -13,7 +13,14 @@ import smallcrab.protocol.accesslog.ALPackage;
 import smallcrab.utils.StringKit;
 import smallcrab.utils.UrlKit;
 
-public class ALGpsNear {
+/**
+ * 附近最后出现的
+ * @FIXME 最后的没做好
+ * 
+ * @author seanwang xalinx@gmail.com
+ *
+ */
+public class GpsNearLast {
 
 	private static double EARTH_RADIUS = 6378.137;
 
@@ -67,7 +74,7 @@ public class ALGpsNear {
 	}
 
 	public static void main(String[] args) throws IOException {
-		ALGpsNear merge = new ALGpsNear();
+		GpsNearLast merge = new GpsNearLast();
 		LineNumberReader reader = null;
 		reader = new LineNumberReader(new FileReader(args[0]));
 		

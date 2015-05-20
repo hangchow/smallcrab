@@ -1,4 +1,5 @@
 package smallcrab.sample;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,7 +14,15 @@ import smallcrab.protocol.accesslog.ALPackage;
 import smallcrab.utils.StringKit;
 import smallcrab.utils.UrlKit;
 
-public class ALGpsMerger {
+/**
+ * 按token列出最后出现的gps
+ * 
+ * @FIXME 最后的没做好
+ * 
+ * @author seanwang xalinx@gmail.com
+ * 
+ */
+public class GpsLast {
 	Map<String, String> store = new HashMap<String, String>(320 * 1024);
 
 	public void merge(ALPackage pac) throws UnsupportedEncodingException {
@@ -47,7 +56,7 @@ public class ALGpsMerger {
 	}
 
 	public static void main(String[] args) throws IOException {
-		ALGpsMerger merge = new ALGpsMerger();
+		GpsLast merge = new GpsLast();
 		LineNumberReader reader = null;
 		reader = new LineNumberReader(new FileReader(args[0]));
 
