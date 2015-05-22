@@ -4,11 +4,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,13 +16,12 @@ import smallcrab.protocol.accesslog.ALPackage;
 import smallcrab.utils.StringKit;
 import smallcrab.utils.UrlKit;
 
-public class SpecifiedGpsList {
+public class Gps {
 	Set<String> specifiedTokens = new HashSet<String>();
-	List<String> store = new LinkedList<String>();
 
-	public SpecifiedGpsList(String specifiedCsvPath) throws IOException {
-		FileReader fileReader = new FileReader(specifiedCsvPath);
-		LineNumberReader reader = new LineNumberReader(fileReader);
+	public Gps(String specifiedCsvPath) throws IOException {
+		System.out.println("tokens from:" + specifiedCsvPath);
+		LineNumberReader reader = new LineNumberReader(new FileReader(specifiedCsvPath));
 
 		String line;
 		while ((line = reader.readLine()) != null) {
@@ -32,11 +31,13 @@ public class SpecifiedGpsList {
 		}
 
 		reader.close();
-		
-		System.out.println("specified size: " + specifiedTokens.size());
-	}
 
-	public void merge(ALPackage pac) throws UnsupportedEncodingException {
+		System.out.println("tokens size:" + specifiedTokens.size());
+	}
+	
+	private static final SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
+
+	public void merge(Writer writer, ALPackage pac) throws IOException {
 		Map<String, String> param = null;
 		String query = pac.getQuery();
 		param = UrlKit.getParameterMapFromQuery(query);
@@ -54,24 +55,29 @@ public class SpecifiedGpsList {
 				latitude = gpsArr[1];
 				if (StringKit.isNotEmpty(privateKey) && StringKit.isNotEmpty(longitude) && StringKit.isNotEmpty(latitude)) {
 					if (specifiedTokens.contains(privateKey)) {
-						store.add(privateKey + "," + pac.getTime() + "," + longitude + "," + latitude);
+						long milli = 0;
+						try {
+							milli = format.parse(pac.getTime()).getTime();
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						writer.write(privateKey + "," + longitude + "," + latitude + "," + milli + "," + pac.getPath() + "\n");
 					}
 				}
 			}
 		}
 	}
 
-	public void write(Writer writer) throws IOException {
-		for (String entry : store) {
-			writer.write(entry + "\n");
-		}
-		writer.close();
-	}
-
+	/**
+	 * @param args
+	 *            tokens csv, log file, out csv
+	 * 
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
-		SpecifiedGpsList merge = new SpecifiedGpsList(args[0]);
-		LineNumberReader reader = null;
-		reader = new LineNumberReader(new FileReader(args[1]));
+		Gps worker = new Gps(args[0]);
+		LineNumberReader reader = new LineNumberReader(new FileReader(args[1]));
+		FileWriter writer = new FileWriter(args[2]);
 
 		String line;
 		int i = 0;
@@ -79,7 +85,7 @@ public class SpecifiedGpsList {
 			try {
 				ALPackage alp = new ALPackage();
 				alp.split(line);
-				merge.merge(alp);
+				worker.merge(writer, alp);
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println(line);
@@ -91,16 +97,8 @@ public class SpecifiedGpsList {
 		}
 
 		reader.close();
-
-		System.out.println("entry size: " + merge.getSize());
-
-		FileWriter fw = new FileWriter(args[2]);
-		merge.write(fw);
-
+		writer.close();
 	}
 
-	private int getSize() {
-		return this.store.size();
-	}
 
 }
