@@ -50,11 +50,10 @@ public class GpsNear {
 	}
 
 	List<String> store = new ArrayList<String>();
-	
-	
+
 	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
-	public static Map<String,FileWriter> fileMap = new HashMap<String, FileWriter>();
-	
+	public static Map<String, FileWriter> fileMap = new HashMap<String, FileWriter>();
+
 	public void merge(ALPackage pac, List<Loc> locations, double distance) throws UnsupportedEncodingException, ParseException {
 		Map<String, String> param = null;
 		String query = pac.getQuery();
@@ -79,7 +78,7 @@ public class GpsNear {
 						if (getDistance(destLat, destLong, Double.valueOf(latitude), Double.valueOf(longitude)) <= distance) {
 							store.add(privateKey + "," + longitude + "," + latitude + "," + time + "," + pac.getPath());
 							try {
-								fileMap.get(loc.file).write(privateKey + "," + longitude + "," + latitude + "," + time + "," + pac.getPath()+"\n");
+								fileMap.get(loc.file).write(privateKey + "," + longitude + "," + latitude + "," + time + "," + pac.getPath() + "\n");
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -113,10 +112,10 @@ public class GpsNear {
 		GpsNear merge = new GpsNear();
 		LineNumberReader reader = null;
 		reader = new LineNumberReader(new FileReader(args[0]));
-		
+
 		LineNumberReader configReader = null;
 		configReader = new LineNumberReader(new FileReader(args[1]));
-		
+
 		List<Loc> locs = new ArrayList<GpsNear.Loc>();
 		String configLine = null;
 		while ((configLine = configReader.readLine()) != null) {
@@ -125,13 +124,13 @@ public class GpsNear {
 			loc.longitude = Double.valueOf(lineString[0]);
 			loc.latitude = Double.valueOf(lineString[1]);
 			loc.file = lineString[2];
-			System.out.println(loc.latitude+":"+loc.longitude);
+			System.out.println(loc.latitude + ":" + loc.longitude);
 			fileMap.put(loc.file, new FileWriter(loc.file));
 			locs.add(loc);
 		}
-		
-//		double longitude = Double.valueOf(args[2]);
-//		double latitude = Double.valueOf(args[3]);
+
+		configReader.close();
+
 		double distance = Double.valueOf(args[2]);
 
 		String line;
@@ -152,21 +151,13 @@ public class GpsNear {
 		}
 
 		reader.close();
-			
+
 		for (int j = 0; j < locs.size(); j++) {
 			fileMap.get(locs.get(j).file).close();
 		}
+
 		System.out.println("complete");
-//		FileWriter fw = new FileWriter(args[1]);
-//		merge.write(fw,locs.get(j).file);
-//		System.out.println("entry size: " + merge.getSize());
 
-		
-
-	}
-
-	private int getSize() {
-		return this.store.size();
 	}
 
 }
