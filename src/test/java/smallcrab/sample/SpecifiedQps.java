@@ -74,6 +74,9 @@ public class SpecifiedQps {
 	}
 
 	public static void main(String[] args) throws IOException {
+		if (args.length < 3) {
+			throw new IllegalArgumentException("need three arguments");
+		}
 		SpecifiedQps merge = new SpecifiedQps(args[0]);
 		LineNumberReader reader = null;
 		reader = new LineNumberReader(new FileReader(args[1]));
