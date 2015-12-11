@@ -161,6 +161,9 @@ public class UrlKit {
 	}
 
 	public static Map<String, String> getParameterMapFromQuery(String query, String encoding) throws UnsupportedEncodingException {
+		if (StringKit.isEmpty(query)) {
+			return null;
+		}
 		String[] array = StringKit.split(query, '&');
 		HashMap<String, String> retMap = null;
 		if (array != null && array.length != 0) {
